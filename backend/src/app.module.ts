@@ -2,8 +2,14 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { PublicacionesModule } from './publicaciones/publicaciones.module';
+import { PublicacionesModule } from './publicaciones/publicaciones.module';
 import { AutenticacionModule } from './autenticacion/autenticacion.module';
 import { UsuariosModule } from './usuarios/usuarios.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { AutenticacionModule } from './autenticacion/autenticacion.module';
+import { AutenticacionModule } from './autenticacion/autenticacion.module';
+import { UsuariosModule } from './usuarios/usuarios.module';
+import { PublicacionesModule } from './publicaciones/publicaciones.module';
 
 @Module({
   imports: [PublicacionesModule, AutenticacionModule, UsuariosModule],
