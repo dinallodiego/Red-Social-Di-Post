@@ -1,1 +1,15 @@
-/* You can add global styles to this file, and also import other style files */
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+ background: linear-gradient(to bottom, #3A0D12 0%, #5C1A22 20%, #3A0D12 80%, #5C1A22 100%);
+
+
+  display: flex;
+  flex-direction: column;
+}
+
+

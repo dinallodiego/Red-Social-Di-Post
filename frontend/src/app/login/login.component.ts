@@ -25,13 +25,18 @@ export class LoginComponent {
       return tieneMayuscula && tieneNumero;
     };
 
-    if (password.length < 8) {
+    if(!email || !password){
+      this.colorMensaje = 'red';
+      this.mensaje = 'Completar todos los campos';
+    }
+    else if (password.length < 8) {
       this.colorMensaje = 'red';
       this.mensaje = 'La contraseña debe tener al menos 8 caracteres';
     } else if (!contieneMayusculaYNumero(password)) {
       this.colorMensaje = 'red';
       this.mensaje = 'La contraseña debe tener al menos una mayúscula y un número';
-    } else {
+    } 
+    else {
       this.colorMensaje = 'green';
       this.mensaje = 'Ingreso correcto';
       this.usuarioIniciado = true;

@@ -1,36 +1,37 @@
-<nav class="navbar navbar-expand-lg bg-dark">
-  <div class="container-fluid">
-    
-    <button class="navbar-toggler bg-white" type="button" data-bs-toggle="collapse"
-    data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
-    aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon bg-white"></span>
-  </button>
-  
-  <div class="collapse navbar-collapse" id="navbarNavDropdown">
-    <ul class="navbar-nav me-auto">
-      <li class="nav-item">
-        <a class="nav-link" href="/publicaciones" style="color: rgb(180, 20, 20);">DiPost</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" href="/login" style="color: white;">Login</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/publicaciones" style="color: white;">Publicaciones</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/registro" style="color: white;">Registro</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/mi-perfil" style="color: white;">Perfil</a>
-        </li>
-
-
-      </ul>
+    <nav class="navbar navbar-expand-lg bg-dark">
+      <div class="container-fluid">
+        
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+        data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false"
+        aria-label="Toggle navigation" id="menu-borde">
+        <span class="navbar-toggler-icon " > </span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav me-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="/publicaciones" style="color: rgb(180, 20, 20);">DiPost</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="/login" style="color: white;">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/publicaciones" style="color: white;">Publicaciones</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/registro" style="color: white;">Registro</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/mi-perfil" style="color: white;">Perfil</a>
+          </li>
+          
+          
+        </ul>
+      </div>
     </div>
-  </div>
-</nav>
-
-<div class="main-content">
-  <router-outlet></router-outlet>
-</div>
+    </nav>
+    
+    <div class="main-content">
+      <router-outlet></router-outlet>
+    </div>
+  

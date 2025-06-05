@@ -1,14 +1,21 @@
-body {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+html, body {
+  height: 100%;
   margin: 0;
-  font-family: Arial, sans-serif;
-  background-color: #333; 
-  color: #fff; 
-  overflow: hidden; /* Sin scroll general */
+  padding: 0;
 }
+
+body {
+  background: linear-gradient(to bottom, #3A0D12, #5C1A22);
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1; /* Hace que este div crezca y ocupe el resto del alto */
+  display: flex;
+  flex-direction: column;
+}
+
 
 .form-container {
   width: 100%;
@@ -103,13 +110,15 @@ button {
 }
 
 .logo-form {
-  width: 160px;  /* Más grande */
+  width: 200px;  
   display: block;
   margin: 0 auto 15px auto;
   user-select: none;
+  border-radius: 50%; 
+  object-fit: cover;  
 }
 
-/* Responsive para pantallas chicas */
+
 @media (max-height: 700px), (max-width: 640px) {
   .form-container {
     max-width: 90vw;
@@ -140,4 +149,6 @@ button {
     font-size: 15px;
     padding: 12px 0;
   }
+
+
 }

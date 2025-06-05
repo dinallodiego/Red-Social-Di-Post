@@ -1,0 +1,38 @@
+body.bg-gradient-custom {
+  background: linear-gradient(to bottom, #3A0D12 0%, #5C1A22 20%, #3A0D12 80%, #5C1A22 100%);
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+.profile-card {
+  background-color: #1e1e1e;
+  max-width: 800px;
+  width: 95%;
+  padding: 40px;
+  position: relative;
+}
+
+.profile-img-xl {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid #fff;
+}
+
+.username-top {
+  top: 20px;
+  left: 20px;
+  font-weight: bold;
+  color: white;
+  font-size: 1.4rem;
+}
+
+.user-desc {
+  font-size: 1.15rem;
+  margin-top: 10px;
+}
+
+.text-white {
+  color: white !important;
+}

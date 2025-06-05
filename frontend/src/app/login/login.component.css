@@ -21,6 +21,15 @@ body {
   color: #fff;
 }
 
+.logo-form {
+  width: 200px;  
+  display: block;
+  margin: 0 auto 15px auto;
+  user-select: none;
+  border-radius: 50%; 
+  object-fit: cover;  
+}
+
 
 .form h2 {
   text-align: center;
