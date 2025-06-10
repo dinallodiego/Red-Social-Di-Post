@@ -18,6 +18,7 @@ export class LoginComponent {
   async login() {
     const email = (document.getElementById('email') as HTMLInputElement).value;
     const password = (document.getElementById('password') as HTMLInputElement).value;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
     const contieneMayusculaYNumero = (cadena: string): boolean => {
       const tieneMayuscula = /[A-Z]/.test(cadena);
@@ -36,6 +37,10 @@ export class LoginComponent {
       this.colorMensaje = 'red';
       this.mensaje = 'La contraseña debe tener al menos una mayúscula y un número';
     } 
+    else if (!emailRegex.test(email)) {
+      this.colorMensaje = 'red';
+      this.mensaje = 'Ingresa un email valido';
+    }
     else {
       this.colorMensaje = 'green';
       this.mensaje = 'Ingreso correcto';

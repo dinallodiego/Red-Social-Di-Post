@@ -36,3 +36,9 @@ body.bg-gradient-custom {
 .text-white {
   color: white !important;
 }
+
+#button-editar{
+  align-items: center;
+  
+}
+

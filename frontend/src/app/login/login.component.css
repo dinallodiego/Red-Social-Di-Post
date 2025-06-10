@@ -85,3 +85,31 @@ button {
 #contenedor{
   margin-top: 50px;
 }
+
+
+@media (max-width: 640px), (max-height: 700px) {
+  .form-container {
+    max-width: 90vw;
+    padding: 15px 20px;
+  }
+
+  .logo-form {
+    width: 130px;
+  }
+
+  .form h2 {
+    font-size: 20px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    font-size: 14px;
+    height: 34px;
+  }
+
+  button {
+    font-size: 15px;
+    padding: 12px;
+  }
+}
