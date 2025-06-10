@@ -1,9 +1,8 @@
 import { Module } from '@nestjs/common';
-import { PublicacionesController } from './publicaciones.controller';
-import { PublicacionesService } from './publicaciones.service';
+import { PublicacionesModule } from './publicaciones/publicaciones.module';
+import { ComentariosModule } from './comentarios/comentarios.module';
 
 @Module({
-  controllers: [PublicacionesController],
-  providers: [PublicacionesService]
+  imports: [PublicacionesModule, ComentariosModule]
 })
 export class PublicacionesModule {}
