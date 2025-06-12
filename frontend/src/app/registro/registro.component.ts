@@ -72,7 +72,7 @@ export class RegistroComponent {
     formData.append('perfil', this.perfil);
 
     try {
-      const response = await this.http.post('http://localhost:3000/usuarios', formData).subscribe();
+      const response = await this.http.post('http://localhost:3000/acceso', formData).subscribe();
       this.mostrarMensaje("Registro exitoso", "success");
     } catch (error: any) {
       console.error(error);
