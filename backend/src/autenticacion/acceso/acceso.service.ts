@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { UsuariosService } from 'src/usuarios/usuarios/usuarios.service';
+import { UsuariosService } from 'src/usuarios/usuarios.service';
 
 @Injectable()
 export class AccesoService {
@@ -8,6 +8,10 @@ export class AccesoService {
     }
 
     registrarse(){
-        return this.userService.create({});
+        
+    }
+
+    login(){
+        
     }
 }
