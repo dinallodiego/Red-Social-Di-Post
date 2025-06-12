@@ -1,16 +1,20 @@
-import { Component, ElementRef, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgModule, ViewChild } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-registro',
   templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.css']
+  styleUrls: ['./registro.component.css'],
+  imports : [CommonModule]
 })
 export class RegistroComponent {
   @ViewChild('modalContainer', { static: true }) modalContainer!: ElementRef;
 
   registrando: boolean = false;
-  cargoArchivo: boolean = false;
   perfil: string = "usuario";
+  passwordVisible = false;
+  constructor(private http: HttpClient) {}
 
   async registrarUsuario() {
     if (this.registrando) return;
@@ -24,15 +28,9 @@ export class RegistroComponent {
     const email = (document.getElementById('email') as HTMLInputElement).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
     const repetirPassword = (document.getElementById('repetirPassword') as HTMLInputElement).value;
-    const descripcion = (document.getElementById('descripcion') as HTMLInputElement).value;
+    const descripcion = (document.getElementById('descripcion') as HTMLTextAreaElement).value.trim();
 
-    if (fotoPerfil.files && fotoPerfil.files.length > 0) {
-      this.cargoArchivo = true;
-    } else {
-      this.cargoArchivo = false;
-    }
-
-    if (!nombre || !apellido || !fechaNacimiento || !usuario || !email || !password || !repetirPassword || !descripcion || !this.cargoArchivo) {
+    if (!nombre || !apellido || !fechaNacimiento || !usuario || !email || !password || !repetirPassword || !descripcion || !fotoPerfil.files?.length) {
       this.mostrarMensaje("Completa todos los campos", "danger");
       this.registrando = false;
       return;
@@ -53,32 +51,42 @@ export class RegistroComponent {
     }
 
     const contieneMayusculaYNumero = (cadena: string): boolean => {
-      const tieneMayuscula = /[A-Z]/.test(cadena);
-      const tieneNumero = /\d/.test(cadena);
-      return tieneMayuscula && tieneNumero;
+      return /[A-Z]/.test(cadena) && /\d/.test(cadena);
     };
 
-    if (password.length < 8) {
-      this.mostrarMensaje("La contraseña debe tener al menos 8 caracteres", "danger");
+    if (password.length < 8 || !contieneMayusculaYNumero(password) || password !== repetirPassword) {
+      this.mostrarMensaje("Contraseña inválida o no coincide", "danger");
       this.registrando = false;
       return;
-    } else if (!contieneMayusculaYNumero(password)) {
-      this.mostrarMensaje("La contraseña debe tener al menos una mayúscula y un número", "danger");
-      this.registrando = false;
-      return;
-    } else if (password !== repetirPassword) {
-      this.mostrarMensaje("Las contraseñas no coinciden", "danger");
-      this.registrando = false;
-      return;
-    } else {
+    }
+
+    const formData = new FormData();
+    formData.append('nombre', nombre);
+    formData.append('apellido', apellido);
+    formData.append('fechaNacimiento', fechaNacimiento);
+    formData.append('fotoPerfil', fotoPerfil.files[0]);
+    formData.append('usuario', usuario);
+    formData.append('email', email);
+    formData.append('password', password);
+    formData.append('descripcion', descripcion);
+    formData.append('perfil', this.perfil);
+
+    try {
+      const response = await this.http.post('http://localhost:3000/usuarios', formData).subscribe();
       this.mostrarMensaje("Registro exitoso", "success");
+    } catch (error: any) {
+      console.error(error);
+      this.mostrarMensaje("Error al registrar usuario", "danger");
+    } finally {
       this.registrando = false;
-      return;
     }
   }
 
   mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {
-    this.modalContainer.nativeElement.innerHTML = '';
     this.modalContainer.nativeElement.innerHTML = `<p class="text-center text-${tipo} mt-4">${mensaje}</p>`;
+  }
+
+   togglePassword() {
+    this.passwordVisible = !this.passwordVisible;
   }
 }

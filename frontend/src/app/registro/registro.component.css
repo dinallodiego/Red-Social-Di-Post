@@ -150,5 +150,17 @@ button {
     padding: 12px 0;
   }
 
+  .password, .password-toggle {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  top: 35px; 
+  user-select: none;
+}
+
+.password img, .password-toggle img {
+  width: 20px;
+  height: 20px;
+}
 
 }

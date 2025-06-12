@@ -1,1 +1,56 @@
-<p>publicaciones works!</p>
+<body class="bg-gradient-custom d-flex align-items-center justify-content-center min-vh-100">
+  <div class="card profile-card shadow-lg rounded-4 text-white position-relative">
+    <div class="card-body">
+      <h2 class="text-white mb-4">Publicaciones</h2>
+
+      <div class="d-flex justify-content-between mb-4 flex-wrap gap-2">
+        <div class="btn-group">
+          <button class="btn btn-outline-light" [class.active]="orden === 'fecha'" (click)="cambiarOrden('fecha')">Más recientes</button>
+          <button class="btn btn-outline-light" [class.active]="orden === 'likes'" (click)="cambiarOrden('likes')">Más me gusta</button>
+        </div>
+      </div>
+
+      <ng-container *ngFor="let pub of publicacionesPaginadas">
+        <div class="card bg-dark text-white mb-4 p-3 rounded-4">
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="fw-bold">{{ pub.autor }}</h5>
+              <p class="mb-2">{{ pub.contenido }}</p>
+              <small class="text-secondary">Publicado el {{ pub.fecha | date:'mediumDate' }}</small>
+            </div>
+            <div class="text-center">
+              <button class="btn btn-sm" (click)="toggleLike(pub)">
+                <i class="bi"
+                   [ngClass]="{
+                     'bi-heart-fill text-danger': pub.leGusto,
+                     'bi-heart text-white': !pub.leGusto
+                   }"
+                   style="font-size: 1.5rem;"></i>
+              </button>
+              <div class="mt-1">{{ pub.likes }}</div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <nav class="d-flex justify-content-center mt-4">
+        <ul class="pagination pagination-sm">
+          <li class="page-item" [class.disabled]="paginaActual === 1">
+            <button class="page-link bg-dark text-white" (click)="paginaActual = paginaActual - 1">&laquo;</button>
+          </li>
+          <li
+            class="page-item"
+            *ngFor="let page of [].constructor(paginasTotales()); let i = index"
+            [class.active]="paginaActual === i + 1">
+            <button class="page-link bg-dark text-white" (click)="paginaActual = i + 1">
+              {{ i + 1 }}
+            </button>
+          </li>
+          <li class="page-item" [class.disabled]="paginaActual === paginasTotales()">
+            <button class="page-link bg-dark text-white" (click)="paginaActual = paginaActual + 1">&raquo;</button>
+          </li>
+        </ul>
+      </nav>
+    </div>
+  </div>
+</body>

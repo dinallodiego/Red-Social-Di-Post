@@ -1,0 +1,27 @@
+.bg-gradient-custom {
+  background: linear-gradient(to bottom, #3A0D12 0%, #5C1A22 20%, #3A0D12 80%, #5C1A22 100%);
+  font-family: 'Segoe UI', sans-serif;
+  color: white;
+}
+
+.profile-card {
+  background-color: #1e1e1e;
+  max-width: 800px;
+  width: 95%;
+  padding: 40px;
+  position: relative;
+}
+
+.card.bg-dark {
+  background-color: #2c2c2c !important;
+}
+
+.btn-outline-light.active {
+  background-color: #ffffff20;
+  border-color: #fff;
+}
+
+.bi-heart, .bi-heart-fill {
+  cursor: pointer;
+  transition: 0.2s ease-in-out;
+}
