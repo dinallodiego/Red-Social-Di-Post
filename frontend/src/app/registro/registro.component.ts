@@ -1,6 +1,7 @@
-import { Component, ElementRef, NgModule, ViewChild } from '@angular/core';
+import { Component, ElementRef, NgModule, ViewChild, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-registro',
@@ -14,6 +15,7 @@ export class RegistroComponent {
   registrando: boolean = false;
   perfil: string = "usuario";
   passwordVisible = false;
+  router = inject(Router);
   constructor(private http: HttpClient) {}
 
   async registrarUsuario() {
@@ -74,6 +76,7 @@ export class RegistroComponent {
     try {
       const response = await this.http.post('http://localhost:3000/acceso', formData).subscribe();
       this.mostrarMensaje("Registro exitoso", "success");
+      setTimeout(() => this.router.navigate(['/publicaciones']), 2000);
     } catch (error: any) {
       console.error(error);
       this.mostrarMensaje("Error al registrar usuario", "danger");
