@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseInterceptors,
-  UploadedFile,
-} from '@nestjs/common';
+import {Controller,Get,Post,Body,Patch,Param,Delete,UseInterceptors,UploadedFile,} from '@nestjs/common';
 import { AccesoService } from './acceso.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
@@ -16,12 +6,18 @@ import { extname } from 'path';
 import { CreateUsuarioDto } from '../../usuarios/dto/create-usuario.dto';
 import { UpdateUsuarioDto } from '../../usuarios/dto/update-usuario.dto';
 import * as bcrypt from 'bcrypt'; 
+import { sign } from 'jsonwebtoken';
+
+
 
 
 @Controller('acceso')
 export class AccesoController {
-  constructor(private readonly accesoService: AccesoService) {}
 
+  
+  constructor(private readonly accesoService: AccesoService ) {}
+
+  
   //Agregamos el usuario mediante el create
   @Post()
   @UseInterceptors(
@@ -72,22 +68,36 @@ export class AccesoController {
   async login(@Body() body: any) {
   const { email, password } = body;
 
-  // 1. Buscar el usuario por email o usuario
+  
   const usuario = await this.accesoService.findByEmail(email); 
 
   if (!usuario) {
     return { mensaje: 'Usuario no encontrado', status: 404 };
   }
 
-  // 2. Comparar la contraseña enviada con la encriptada
+ 
   const coincide = await bcrypt.compare(password, usuario.password);
 
   if (!coincide) {
     return { mensaje: 'Contraseña incorrecta', status: 401 };
   }
 
-  // 3. Devolver los datos del usuario (sin la contraseña)
+  const payload = {
+    id: usuario._id,
+    email: usuario.email,
+    nombre: usuario.nombre
+  };
+
+  const token = sign(payload, "clave-ultra-secreta", {
+    expiresIn: '60s' 
+  });
+
+  
   const { password: _, ...usuarioSinPassword } = (usuario as any).toObject();
-  return usuarioSinPassword;
+  return {
+    mensaje: 'Login exitoso',
+    usuario: usuarioSinPassword,
+    token
+  };
 }
 }

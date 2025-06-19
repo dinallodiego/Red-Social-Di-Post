@@ -7,6 +7,8 @@ import { Model } from 'mongoose';
 import { UsuarioDocument } from '../../usuarios/entities/usuario.entity';
 import * as bcrypt from 'bcrypt';
 
+
+
 @Injectable()
 export class AccesoService {
  constructor(
@@ -39,9 +41,10 @@ export class AccesoService {
     return this.usuarioModel.findByIdAndDelete(id).exec();
   }
 
-  async findByEmail(email: string): Promise<Usuario | null> {
-  return this.usuarioModel.findOne({ email });
-}
+  async findByEmail(email: string): Promise<UsuarioDocument | null> {
+    return this.usuarioModel.findOne({ email }).exec(); 
+  }
 
+  
 
 }
