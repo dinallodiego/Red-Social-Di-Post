@@ -1,73 +1,122 @@
-import { Component } from '@angular/core';
+import { Component, ElementRef, ViewChild, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+
 @Component({
   selector: 'app-publicaciones',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './publicaciones.component.html',
-  imports: [CommonModule],
   styleUrls: ['./publicaciones.component.css']
 })
 export class PublicacionesComponent {
-  publicaciones = [
-    { id: 1, autor: 'Diego', contenido: 'Publicacion1', fecha: new Date('2024-06-01'), likes: 5, leGusto: false },
-    { id: 2, autor: 'Lourdes', contenido: 'Publicacion 2', fecha: new Date('2024-06-05'), likes: 15, leGusto: false },
-    { id: 3, autor: 'Lourdes', contenido: 'Publicacion 3', fecha: new Date('2024-06-10'), likes: 2, leGusto: false },
-    { id: 4, autor: 'Diego', contenido: 'Publicacion 4', fecha: new Date('2024-06-11'), likes: 8, leGusto: false },
-    { id: 5, autor: 'Lourdes', contenido: 'Publicacion 5', fecha: new Date('2024-06-12'), likes: 3, leGusto: false },
-    { id: 6, autor: 'Diego', contenido: 'Publicacion 6', fecha: new Date('2024-06-13'), likes: 12, leGusto: false }
-  ];
+  @ViewChild('modalContainer', { static: false }) modalContainer!: ElementRef;
 
+  router = inject(Router);
   orden: 'fecha' | 'likes' = 'fecha';
   paginaActual = 1;
   publicacionesPorPagina = 3;
+  publicaciones: any[] = [];
 
-  constructor() {
-    this.cargarLikesDeLocalStorage();
+  mostrarModal = false;
+  nuevoContenido = '';
+  nuevaImagen: File | null = null;
+
+  constructor(private http: HttpClient) {
+    this.cargarPublicaciones();
   }
 
-  cambiarOrden(orden: 'fecha' | 'likes') {
-    this.orden = orden;
-    this.paginaActual = 1;
+  ngOnInit(){
+    this.cargarPublicaciones();
   }
 
-  toggleLike(pub: any) {
-    pub.leGusto = !pub.leGusto;
-    pub.likes += pub.leGusto ? 1 : -1;
-    this.guardarLikesEnLocalStorage();
-  }
+  ordenarPor(tipo: 'fecha' | 'likes') {
+  this.orden = tipo;
+  this.paginaActual = 1;
+  this.cargarPublicaciones();
+}
+  cargarPublicaciones() {
+    const params = {
+      page: this.paginaActual.toString(),
+      limit: this.publicacionesPorPagina.toString(),
+      sortBy: this.orden,
+      order: 'desc'
+    };
 
-  get publicacionesOrdenadas() {
-    return [...this.publicaciones].sort((a, b) => {
-      return this.orden === 'fecha'
-        ? b.fecha.getTime() - a.fecha.getTime()
-        : b.likes - a.likes;
+    this.http.get<any[]>('http://localhost:3000/publicaciones', { params }).subscribe({
+      next: (data) => {
+        this.publicaciones = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar publicaciones:', err);
+      }
     });
   }
 
-  get publicacionesPaginadas() {
-    const inicio = (this.paginaActual - 1) * this.publicacionesPorPagina;
-    return this.publicacionesOrdenadas.slice(inicio, inicio + this.publicacionesPorPagina);
+  crearNuevaPublicacion() {
+    this.mostrarModal = true;
   }
 
-  paginasTotales() {
-    return Math.ceil(this.publicaciones.length / this.publicacionesPorPagina);
+  cerrarModal() {
+    this.mostrarModal = false;
+    this.nuevoContenido = '';
+    this.nuevaImagen = null;
   }
 
-  guardarLikesEnLocalStorage() {
-    const estadoLikes = this.publicaciones.map(pub => ({ id: pub.id, leGusto: pub.leGusto, likes: pub.likes }));
-    localStorage.setItem('estadoLikes', JSON.stringify(estadoLikes));
+   agregarPublicacion() {
+  if (!this.nuevaImagen || !this.nuevoContenido.trim()) {
+    this.mostrarMensaje("Completa todos los campos", "danger");
+    return;
   }
 
-  cargarLikesDeLocalStorage() {
-    const data = localStorage.getItem('estadoLikes');
-    if (data) {
-      const estadoGuardado = JSON.parse(data);
-      this.publicaciones.forEach(pub => {
-        const encontrado = estadoGuardado.find((p: any) => p.id === pub.id);
-        if (encontrado) {
-          pub.leGusto = encontrado.leGusto;
-          pub.likes = encontrado.likes;
-        }
-      });
+  const formData = new FormData();
+  formData.append('usuario', 'dinallodiego');
+  formData.append('imagen', this.nuevaImagen);
+  formData.append('descripcion', this.nuevoContenido);
+  formData.append('fecha', new Date().toISOString());
+  formData.append('publicada', 'true');
+  formData.append('likes', "0");
+
+  this.http.post('http://localhost:3000/publicaciones', formData).subscribe({
+    next: () => {
+      this.mostrarMensaje("Publicación exitosa", "success");
+      this.cargarPublicaciones(); 
+      this.cerrarModal();          
+    },
+    error: (error) => {
+      console.error(error);
+      this.mostrarMensaje("Error al registrar publicación", "danger");
+    }
+  });
+}
+
+
+  onImagenSeleccionada(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.nuevaImagen = file;
+    }
+  }
+
+  mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {
+    this.modalContainer.nativeElement.innerHTML = `<p class="text-center text-${tipo} mt-4">${mensaje}</p>`;
+  }
+
+  obtenerUrlImagen(nombre: string) {
+    return `http://localhost:3000/uploads/publicaciones/${nombre}`;
+  }
+
+  siguientePagina() {
+    this.paginaActual++;
+    this.cargarPublicaciones();
+  }
+
+  anteriorPagina() {
+    if (this.paginaActual > 1) {
+      this.paginaActual--;
+      this.cargarPublicaciones();
     }
   }
 }

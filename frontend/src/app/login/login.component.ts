@@ -47,16 +47,19 @@ export class LoginComponent {
       })
     );
 
-    if (response && response._id) {
-      this.colorMensaje = 'green';
-      this.mensaje = 'Ingreso correcto';
-      this.usuarioIniciado = true;
+    if (response && response.usuario && response.token) {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('usuario', JSON.stringify(response.usuario));
+    this.colorMensaje = 'green';
+    this.mensaje = 'Ingreso correcto';
+    this.usuarioIniciado = true;
 
-      setTimeout(() => this.router.navigate(['/publicaciones']), 2000);
-    } else {
-      this.colorMensaje = 'red';
-      this.mensaje = 'Credenciales incorrectas';
-    }
+    setTimeout(() => this.router.navigate(['/publicaciones']), 2000);
+  } else {
+    this.colorMensaje = 'red';
+    this.mensaje = 'Credenciales incorrectas';
+  }
+
 
   } catch (error: any) {
     console.error('Error en login:', error);

@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg bg-dark">
+<nav class="navbar navbar-expand-lg bg-dark" *ngIf="debeMostrarNavbar()">
   <div class="container-fluid">
     <a class="navbar-brand" href="/publicaciones" id="Dipost">
       <img src="/favicon2.png" alt="Di Post" height="40">
@@ -12,22 +12,29 @@
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
       <ul class="navbar-nav me-auto">
         <li class="nav-item">
-          <a class="nav-link" [ngClass]="{ 'active-link': isCurrentPage('/login') }" href="/login">Login</a>
-        </li>
-        <li class="nav-item">
           <a class="nav-link" [ngClass]="{ 'active-link': isCurrentPage('/publicaciones') }" href="/publicaciones">Publicaciones</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [ngClass]="{ 'active-link': isCurrentPage('/registro') }" href="/registro">Registro</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" [ngClass]="{ 'active-link': isCurrentPage('/mi-perfil') }" href="/mi-perfil">Perfil</a>
         </li>
+         <li class="nav-item" *ngIf="!tokenActivo()">
+          <a class="nav-link" [ngClass]="{ 'active-link': isCurrentPage('/login') }" href="/login">Login</a>
+        </li>
+        <li class="nav-item" *ngIf="!tokenActivo()">
+          <a class="nav-link" [ngClass]="{ 'active-link': isCurrentPage('/registro') }" href="/registro">Registro</a>
+        </li>
+        <li class="nav-item" *ngIf="tokenActivo()">
+          <a class="nav-link" (click)="cerrarSesion()" style="cursor: pointer;">Cerrar sesión</a>
+        </li>
+
+        <li *ngIf="nombre_usuario">
+          <h5 class="text-white m-0">Hola, {{ nombre_usuario }} 👋</h5>
+        </li>
+
       </ul>
     </div>
   </div>
 </nav>
-
 <div class="main-content">
   <router-outlet></router-outlet>
 </div>

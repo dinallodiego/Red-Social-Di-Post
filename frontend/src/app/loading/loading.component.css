@@ -1,0 +1,29 @@
+body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(to bottom, #3A0D12, #5C1A22);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      color: white;
+      text-align: center;
+    }
+
+    .spinner-border {
+      width: 4rem;
+      height: 4rem;
+    }
+
+    #logo {
+      max-width: 300px;
+      margin-bottom: 20px;
+      border-radius: 50%;
+    }
+
+    .loading-text {
+      margin-top: 15px;
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #fff;
+    }
