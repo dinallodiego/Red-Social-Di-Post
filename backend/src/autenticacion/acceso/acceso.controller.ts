@@ -85,7 +85,10 @@ export class AccesoController {
   const payload = {
     id: usuario._id,
     email: usuario.email,
-    nombre: usuario.nombre
+    nombre: usuario.nombre,
+    usuario: usuario.usuario,
+    fotoPerfil: usuario.fotoPerfil,
+    descripcion: usuario.descripcion
   };
 
   const token = sign(payload, "clave-ultra-secreta", {

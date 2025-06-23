@@ -1,35 +1,38 @@
-import { Component } from '@angular/core';
-import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import { Component } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [CommonModule, RouterOutlet],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'frontend';
-  nombre_usuario: string = '';
+  sidebarVisible = false;
 
   constructor(public router: Router) {}
 
-  ngOnInit(): void {
-    this.nombre_usuario = this.ObtenerNombreUsuario();
-  } 
-  
-  ObtenerNombreUsuario() {
-    const storageData = localStorage.getItem('access_token'); 
-    if (!storageData) return '';
+  toggleSidebar(): void {
+    this.sidebarVisible = !this.sidebarVisible;
+  }
+
+  closeSidebarOnMobile(): void {
+    if (window.innerWidth <= 992) {
+      this.sidebarVisible = false;
+    }
+  }
+
+  get nombre_usuario(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return '';
 
     try {
-        const data = JSON.parse(storageData);
-        return data.user?.nombre ?? ''; 
-    } catch (error) {
-        console.error('Error al decodificar el token:', error);
-        return '';
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.nombre ?? '';
+    } catch {
+      return '';
     }
   }
 
@@ -37,29 +40,22 @@ export class AppComponent {
     return this.router.url === route;
   }
 
-  debeMostrarNavbar(): boolean {
-    const rutasSinNavbar = ['/loading', '/']; 
-    return !rutasSinNavbar.includes(this.router.url);
-  }
-
   tokenActivo(): boolean {
-  const token = localStorage.getItem('token');
-  if (!token) return false;
+    const token = localStorage.getItem('token');
+    if (!token) return false;
 
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const ahora = Math.floor(Date.now() / 1000);
-    return payload.exp > ahora;
-  } catch (e) {
-    return false;
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const ahora = Math.floor(Date.now() / 1000);
+      return payload.exp > ahora;
+    } catch (e) {
+      return false;
+    }
   }
-}
 
-cerrarSesion(): void {
-  localStorage.removeItem('token');
-  localStorage.removeItem('usuario'); 
-  this.nombre_usuario = '';
-  this.router.navigate(['/login']);
-}
-
+  cerrarSesion(): void {
+    localStorage.removeItem('token');
+    localStorage.removeItem('usuario');
+    this.router.navigate(['/login']);
+  }
 }

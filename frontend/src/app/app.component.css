@@ -1,20 +1,122 @@
-#menu-borde {
-  background: linear-gradient(to bottom, #3A0D12, #5C1A22);
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-color: #212529;
+  box-shadow: 2px 0 12px rgb(0 0 0 / 0.5);
+  transition: left 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  z-index: 1030;
 }
 
-.nav-link {
+/* HEADER FIJO */
+.sidebar-header {
+  flex: 0 0 auto; /* no crece ni encoge */
+  padding-bottom: 0;
+}
+
+/* CONTENIDO SCROLLEABLE */
+.sidebar-content {
+  flex: 1 1 auto; /* ocupa el resto */
+  overflow-y: auto;
+  padding-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Sidebar oculta en móvil */
+@media (max-width: 992px) {
+  .sidebar {
+    left: -220px;
+  }
+  .sidebar.show {
+    left: 0;
+  }
+}
+
+/* Ajusta el contenido principal para que no quede oculto */
+.main-content {
+  margin-left: 220px;
+  transition: margin-left 0.3s ease;
+}
+
+/* En móvil el contenido ocupa todo el ancho */
+@media (max-width: 992px) {
+  .main-content {
+    margin-left: 0;
+  }
+}
+
+/* Links activos */
+.nav-link.active-link,
+.nav-link.active-link:hover,
+.nav-link.active-link:focus {
+  background-color: #a00000;
   color: white;
-  transition: color 0.5s ease-out ;
-  font-size: 18px;
+  font-weight: 600;
+  border-radius: 6px;
 }
 
+/* Hover links */
 .nav-link:hover {
-  color: #881d29;
+  background-color: #5c1414;
+  color: white;
+  border-radius: 6px;
   text-decoration: none;
-  font-weight: bold;
 }
 
-.active-link {
-  color: #881d29;
-  font-weight: bold;
+/* Scrollbar para sidebar */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background-color: #a00000;
+  border-radius: 3px;
+}
+
+/* User info al pie */
+.user-info {
+  padding: 10px 15px;
+  border-top: 1px solid #5c1414;
+  font-weight: 500;
+  font-size: 1rem;
+}
+
+/* Botón hamburguesa (position fixed para que quede arriba siempre) */
+button.btn.btn-dark.d-lg-none {
+  position: fixed;
+  top: 15px;
+  left: 15px;
+  z-index: 1040;
+  border-radius: 4px;
+  opacity: 0.85;
+  transition: opacity 0.3s ease;
+}
+
+button.btn.btn-dark.d-lg-none:hover {
+  opacity: 1;
+}
+
+/* Overlay que cubre el contenido cuando sidebar está abierta en móvil */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 220px;
+  width: calc(100vw - 220px);
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.4);
+  z-index: 1025;
+  cursor: pointer;
+}
+
+/* Ocultar overlay en desktop */
+@media (min-width: 993px) {
+  .overlay {
+    display: none;
+  }
 }

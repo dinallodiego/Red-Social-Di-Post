@@ -2,15 +2,15 @@
 
   <div class="card profile-card shadow-lg rounded-4 text-white position-relative">
     <div class="card-body">
-      <p class="username-top m-0 position-absolute">dinallodiego</p>
+      <p class="username-top m-0 position-absolute">{{user_name}}</p>
       <div class="row align-items-center mt-5 g-5">
         <div class="col-md-4 text-center">
-          <img src="/foto.png" alt="Foto de perfil" class="profile-img-xl">
+          <img [src]="foto_dePerfilPath" alt="Foto de perfil" class="profile-img-xl">
         </div>
         <div class="col-md-8 ps-md-5">
-          <h2 class="mb-3 text-white">Diego Di Nallo</h2>
+          <h2 class="mb-3 text-white">{{nombre}}</h2>
           <p class="user-desc text-white">
-            Desarrollador Frontend apasionado por la tecnología, el diseño elegante y las experiencias intuitivas. Siempre buscando nuevos desafíos digitales 🚀.
+            {{descripcion}}
           </p>
         </div>
         <div class="d-flex justify-content-center gap-5 mt-3 flex-wrap">

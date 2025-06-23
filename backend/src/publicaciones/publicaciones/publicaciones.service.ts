@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Publicacion, PublicacionDocument } from './entities/publicacion.entity';
@@ -33,5 +33,24 @@ export class PublicacionService {
       .limit(limit)
       .exec();
   }
+
+  async agregarLike(id: string, usuario: string) {
+  const publicacion = await this.publicacionModel.findById(id);
+
+  if (!publicacion) throw new NotFoundException('Publicación no encontrada');
+
+  if (!publicacion.likes.includes(usuario)) {
+    publicacion.likes.push(usuario);
+    await publicacion.save();
+  }
+
+  else if (publicacion.likes.includes(usuario)) 
+    {
+      publicacion.likes = publicacion.likes.filter(u => u !== usuario);
+      await publicacion.save();
+    }
+
+  return publicacion;
+}
 
 }

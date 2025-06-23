@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsDateString, IsNumber } from 'class-validator';
+import { IsString, IsBoolean, IsDateString, IsNumber, IsArray } from 'class-validator';
 
 export class CreatePublicacioneDto {
   @IsString()
@@ -16,8 +16,10 @@ export class CreatePublicacioneDto {
   @IsBoolean()
   publicada: boolean;
 
-  @IsNumber()
-  likes: number;
+  @IsArray()
+  @IsString({ each: true }) 
+  likes: string[];
+
   
   
 }

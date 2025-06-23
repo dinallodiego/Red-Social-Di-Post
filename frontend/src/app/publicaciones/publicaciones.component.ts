@@ -65,6 +65,18 @@ export class PublicacionesComponent {
     this.nuevaImagen = null;
   }
 
+  get user_name(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return '';
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.usuario ?? ''; 
+    } catch {
+      return '';
+    }
+  }
+
    agregarPublicacion() {
   if (!this.nuevaImagen || !this.nuevoContenido.trim()) {
     this.mostrarMensaje("Completa todos los campos", "danger");
@@ -72,12 +84,11 @@ export class PublicacionesComponent {
   }
 
   const formData = new FormData();
-  formData.append('usuario', 'dinallodiego');
+  formData.append('usuario', this.user_name);
   formData.append('imagen', this.nuevaImagen);
   formData.append('descripcion', this.nuevoContenido);
   formData.append('fecha', new Date().toISOString());
   formData.append('publicada', 'true');
-  formData.append('likes', "0");
 
   this.http.post('http://localhost:3000/publicaciones', formData).subscribe({
     next: () => {
@@ -101,8 +112,11 @@ export class PublicacionesComponent {
   }
 
   mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {
+  if (this.modalContainer) {
     this.modalContainer.nativeElement.innerHTML = `<p class="text-center text-${tipo} mt-4">${mensaje}</p>`;
   }
+}
+
 
   obtenerUrlImagen(nombre: string) {
     return `http://localhost:3000/uploads/publicaciones/${nombre}`;
@@ -119,4 +133,39 @@ export class PublicacionesComponent {
       this.cargarPublicaciones();
     }
   }
+
+  darLike(publicacionId: string) {
+  const usuario = this.user_name;
+  if (!usuario) {
+    this.mostrarMensaje('Debés estar logueado para dar like', 'danger');
+    return;
+  }
+
+  this.http.put(`http://localhost:3000/publicaciones/${publicacionId}/like`, { usuario }).subscribe({
+    next: () => {
+      this.mostrarMensaje('¡Te gusta esta publicación!', 'success');
+      this.cargarPublicaciones(); 
+    },
+    error: (error) => {
+      console.error(error);
+      this.mostrarMensaje('Error al dar like', 'danger');
+    }
+  });
+}
+
+get foto_dePerfilPath(): string {
+  const token = localStorage.getItem('token');
+  if (!token) return 'assets/default-profile.png';
+
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const filename = payload.fotoPerfil ?? '';
+    console.log('Foto perfil desde token:', filename);
+    return filename ? `http://localhost:3000/uploads/perfiles/${filename}` : 'assets/default-profile.png';
+  } catch (error) {
+    console.error('Error al decodificar token:', error);
+    return 'assets/default-profile.png';
+  }
+}
+
 }

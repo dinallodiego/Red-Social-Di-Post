@@ -20,8 +20,9 @@ export class Publicacion {
   @Prop({ required: true })
   publicada: string;
 
-  @Prop({ required: true , default: 0})
-  likes: number;
+  @Prop({ required: true, type: [String] })
+  likes: string[];
+
   
 }
 

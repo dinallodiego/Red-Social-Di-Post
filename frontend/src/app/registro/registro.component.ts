@@ -74,15 +74,23 @@ export class RegistroComponent {
     formData.append('perfil', this.perfil);
 
     try {
-      const response = await this.http.post('http://localhost:3000/acceso', formData).subscribe();
-      this.mostrarMensaje("Registro exitoso", "success");
-      setTimeout(() => this.router.navigate(['/publicaciones']), 2000);
-    } catch (error: any) {
-      console.error(error);
-      this.mostrarMensaje("Error al registrar usuario", "danger");
-    } finally {
-      this.registrando = false;
-    }
+  await this.http.post('http://localhost:3000/acceso', formData).toPromise();
+  const loginData = { email, password };
+  const loginResponse: any = await this.http.post('http://localhost:3000/acceso/login', loginData).toPromise();
+
+  if (loginResponse?.token) {
+    localStorage.setItem('token', loginResponse.token);
+    this.mostrarMensaje("Registro exitoso. Bienvenido a DiPost", "success");
+    setTimeout(() => this.router.navigate(['/publicaciones']), 2500);
+  } else {
+    this.mostrarMensaje("Error al iniciar sesión", "danger");
+  }
+
+} catch (error: any) {
+  console.error(error);
+  this.mostrarMensaje("Error al registrar o loguear", "danger");
+}
+
   }
 
   mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {

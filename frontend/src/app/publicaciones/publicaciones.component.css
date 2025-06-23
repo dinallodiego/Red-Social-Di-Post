@@ -6,14 +6,17 @@
 
 .profile-card {
   background-color: #1e1e1e;
-  max-width: 800px;
-  width: 95%;
-  padding: 40px;
+  max-width: 700px;
+  width: 90%;
+  padding: 30px;
   position: relative;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .card.bg-dark {
   background-color: #2c2c2c !important;
+  padding: 16px;
 }
 
 .btn-outline-light.active {
@@ -21,9 +24,45 @@
   border-color: #fff;
 }
 
-.bi-heart, .bi-heart-fill {
+#btn-fecha:focus, #btn-likes:focus {
+  background-color: #912633;
+}
+
+.like-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.like-button {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
   cursor: pointer;
-  transition: 0.2s ease-in-out;
+  transition: transform 0.2s ease;
+  padding: 0;
+}
+
+.like-button:hover {
+  transform: scale(1.2);
+}
+
+.like-button:focus {
+  outline: none;
+}
+
+.heart-icon {
+  transition: color 0.3s ease;
+}
+
+.like-button.liked .heart-icon {
+  color: #e74c3c;
+}
+
+.like-count {
+  font-size: 1rem;
+  color: #fff;
 }
 
 .btn-fab {
@@ -82,11 +121,35 @@
 }
 
 
-#btn-fecha:focus{
-  background-color:#912633;
-}
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 20px;
+    max-width: 95%;
+  }
 
-#btn-likes:focus{
-  background-color:#912633;
-}
+  .card.bg-dark {
+    padding: 12px;
+  }
 
+  .btn-fab {
+    width: 44px;
+    height: 44px;
+    padding-left: 10px;
+  }
+
+  .btn-fab:hover {
+    width: 160px;
+  }
+
+  .like-button {
+    font-size: 1.5rem;
+  }
+
+  .like-count {
+    font-size: 0.9rem;
+  }
+
+  img.img-fluid {
+    max-height: 250px;
+  }
+}

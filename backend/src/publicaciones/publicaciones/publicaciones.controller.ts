@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Patch, UploadedFile, UseInterceptors, BadRequestException, Put } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -21,20 +21,30 @@ export class PublicacionController {
     }),
   }))
   async create(
-    @UploadedFile() imagen: Express.Multer.File,
-    @Body() body: CreatePublicacioneDto,
-  ) {
-    if (!imagen) {
-      throw new BadRequestException('La imagen es obligatoria');
-    }
-
-    
-    const data = {
-      ...body,
-      imagen: imagen.filename, 
-    };
-    return await this.publicacionService.create(data);
+  @UploadedFile() imagen: Express.Multer.File,
+  @Body() body: CreatePublicacioneDto,
+) {
+  if (!imagen) {
+    throw new BadRequestException('La imagen es obligatoria');
   }
+
+  
+  let likesArray: string[] = [];
+  try {
+    likesArray = typeof body.likes === 'string' ? JSON.parse(body.likes) : body.likes;
+  } catch (error) {
+    likesArray = [];
+  }
+
+  const data = {
+    ...body,
+    imagen: imagen.filename,
+    likes: likesArray,
+  };
+
+  return await this.publicacionService.create(data);
+}
+
 
   @Get()
   async findAll(
@@ -50,6 +60,14 @@ export class PublicacionController {
       order,
     );
   }
+  @Put(':id/like')
+  async agregarLike(
+    @Param('id') id: string,
+    @Body('usuario') usuario: string,
+  ) {
+    return this.publicacionService.agregarLike(id, usuario);
+  }
+
 
  
 }
