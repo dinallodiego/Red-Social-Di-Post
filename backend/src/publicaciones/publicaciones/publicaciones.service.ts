@@ -17,22 +17,26 @@ export class PublicacionService {
   }
 
   async findAll(
-    page = 1,
-    limit = 10,
-    sortBy = 'fecha',
-    order: 'asc' | 'desc' = 'desc',
-  ): Promise<Publicacion[]> {
-    const skip = (page - 1) * limit;
-    const sortOption: any = {};
-    sortOption[sortBy] = order === 'asc' ? 1 : -1;
+  page = 1,
+  limit = 10,
+  sortBy = 'fecha',
+  order: 'asc' | 'desc' = 'desc',
+): Promise<{ total: number, publicaciones: Publicacion[] }> {
+  const skip = (page - 1) * limit;
+  const sortOption: any = {};
+  sortOption[sortBy] = order === 'asc' ? 1 : -1;
 
-    return this.publicacionModel
-      .find()
-      .sort(sortOption)
-      .skip(skip)
-      .limit(limit)
-      .exec();
-  }
+  const total = await this.publicacionModel.countDocuments();
+  const publicaciones = await this.publicacionModel
+    .find()
+    .sort(sortOption)
+    .skip(skip)
+    .limit(limit)
+    .exec();
+
+  return { total, publicaciones };
+}
+
 
   async agregarLike(id: string, usuario: string) {
   const publicacion = await this.publicacionModel.findById(id);
@@ -52,5 +56,12 @@ export class PublicacionService {
 
   return publicacion;
 }
+
+ async findByUsuario(usuario: string): Promise<Publicacion[]> {
+
+  const publicaciones = await this.publicacionModel.find({ usuario }).sort({ fecha: -1 }).exec();
+  return publicaciones;
+}
+
 
 }

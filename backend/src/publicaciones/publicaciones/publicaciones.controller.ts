@@ -60,6 +60,13 @@ export class PublicacionController {
       order,
     );
   }
+
+ @Get('usuario/:usuario')
+  async findByUsuario(@Param('usuario') usuario: string) {
+  return this.publicacionService.findByUsuario(usuario);
+}
+
+
   @Put(':id/like')
   async agregarLike(
     @Param('id') id: string,
