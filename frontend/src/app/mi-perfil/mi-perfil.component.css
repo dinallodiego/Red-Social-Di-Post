@@ -1,15 +1,21 @@
-body.bg-gradient-custom {
-  background: linear-gradient(to bottom, #3A0D12 0%, #5C1A22 20%, #3A0D12 80%, #5C1A22 100%);
+.bg-gradient-custom {
+  background: linear-gradient(to bottom, #3a0d12 0%, #5c1a22 20%, #3a0d12 80%, #5c1a22 100%);
   font-family: 'Segoe UI', sans-serif;
   color: white;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
 }
 
 .profile-card {
   background-color: #1e1e1e;
-  max-width: 800px;
-  width: 95%;
-  padding: 40px;
+  max-width: 700px;
+  width: 90%;
+  padding: 30px;
   position: relative;
+  margin: 20px auto;
 }
 
 .profile-img-xl {
@@ -26,6 +32,7 @@ body.bg-gradient-custom {
   font-weight: bold;
   color: white;
   font-size: 1.4rem;
+  position: absolute;
 }
 
 .user-desc {
@@ -33,12 +40,88 @@ body.bg-gradient-custom {
   margin-top: 10px;
 }
 
-.text-white {
-  color: white !important;
+.card.bg-dark {
+  background-color: #2c2c2c !important;
+  padding: 16px;
 }
 
-#button-editar{
+.like-container {
+  display: flex;
   align-items: center;
-  
+  gap: 8px;
+  margin-top: 8px;
 }
 
+.like-button {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  padding: 0;
+}
+
+.like-button:hover {
+  transform: scale(1.2);
+}
+
+.like-button:focus {
+  outline: none;
+}
+
+.heart-icon {
+  transition: color 0.3s ease;
+}
+
+.like-button.liked .heart-icon {
+  color: #e74c3c;
+}
+
+.like-count {
+  font-size: 1rem;
+  color: #fff;
+}
+
+.btn-outline-secondary {
+  border-color: #6c757d;
+  color: #fff;
+}
+
+.btn-outline-danger {
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  color: #fff;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+
+@media (max-width: 768px) {
+  .profile-card {
+    padding: 20px;
+    max-width: 95%;
+  }
+
+  .card.bg-dark {
+    padding: 12px;
+  }
+
+  .like-button {
+    font-size: 1.5rem;
+  }
+
+  .like-count {
+    font-size: 0.9rem;
+  }
+
+  img.img-fluid {
+    max-height: 250px;
+  }
+}

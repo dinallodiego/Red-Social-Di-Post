@@ -35,14 +35,14 @@
       <nav class="d-flex justify-content-center mt-4">
         <ul class="pagination pagination-sm">
           <li class="page-item" [class.disabled]="paginaActual === 1">
-            <button class="page-link bg-dark text-white" (click)="anteriorPagina()">&laquo;</button>
-          </li>
-          <li class="page-item disabled">
-            <span class="page-link bg-dark text-white">{{ paginaActual }}</span>
-          </li>
-          <li class="page-item">
-            <button class="page-link bg-dark text-white" (click)="siguientePagina()">&raquo;</button>
-          </li>
+          <button class="page-link bg-dark text-white" (click)="anteriorPagina()">&laquo;</button>
+        </li>
+        <li class="page-item disabled">
+          <span class="page-link bg-dark text-white">{{ paginaActual }}</span>
+        </li>
+        <li class="page-item" [class.disabled]="!hayPaginaSiguiente()">
+          <button class="page-link bg-dark text-white" (click)="siguientePagina()">&raquo;</button>
+        </li>
         </ul>
       </nav>
     </div>

@@ -14,11 +14,11 @@
   <nav [class.show]="sidebarVisible" class="sidebar bg-dark text-white d-flex flex-column p-3">
 
     <!-- HEADER FIJO -->
-    <div class="sidebar-header d-flex align-items-center mb-4 text-white text-decoration-none">
-      <a href="/publicaciones" class="d-flex align-items-center text-white text-decoration-none w-100">
+    <div class="sidebar-header d-flex align-items-center mb-1 mt-1 text-white text-decoration-none" >
+      <h4 class="d-flex align-items-center text-white text-decoration-none w-100">
         <img src="/favicon2.png" alt="Di Post" height="40" class="me-2" />
         <span class="fs-4 fw-bold">Di Post</span>
-      </a>
+      </h4>
     </div>
 
     <hr class="text-secondary" />
@@ -26,12 +26,12 @@
     <!-- CONTENIDO SCROLLEABLE -->
     <div class="sidebar-content flex-grow-1 d-flex flex-column overflow-auto">
       <ul class="nav nav-pills flex-column mb-auto">
-        <li class="nav-item mb-1">
+        <li class="nav-item mb-1" *ngIf="tokenActivo()">
           <a href="/publicaciones" [ngClass]="{'active-link': isCurrentPage('/publicaciones')}" class="nav-link text-white d-flex align-items-center" (click)="closeSidebarOnMobile()">
             <i class="bi bi-file-post-fill me-2"></i> Publicaciones
           </a>
         </li>
-        <li class="nav-item mb-1">
+        <li class="nav-item mb-1" *ngIf="tokenActivo()">
           <a href="/mi-perfil" [ngClass]="{'active-link': isCurrentPage('/mi-perfil')}" class="nav-link text-white d-flex align-items-center" (click)="closeSidebarOnMobile()">
             <i class="bi bi-person-circle me-2"></i> Perfil
           </a>

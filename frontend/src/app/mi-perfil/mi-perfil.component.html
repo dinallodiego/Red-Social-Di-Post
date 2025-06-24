@@ -1,31 +1,56 @@
 <body class="bg-gradient-custom d-flex align-items-center justify-content-center min-vh-100">
-
-  <div class="card profile-card shadow-lg rounded-4 text-white position-relative">
+  <div class="card profile-card shadow-lg rounded-4 text-white position-relative w-100 p-3">
     <div class="card-body">
-      <p class="username-top m-0 position-absolute">{{user_name}}</p>
+      <p class="username-top m-0 position-absolute">{{"@"}}{{user_name}}</p>
       <div class="row align-items-center mt-5 g-5">
         <div class="col-md-4 text-center">
           <img [src]="foto_dePerfilPath" alt="Foto de perfil" class="profile-img-xl">
         </div>
         <div class="col-md-8 ps-md-5">
-          <h2 class="mb-3 text-white">{{nombre}}</h2>
-          <p class="user-desc text-white">
+          <h2 class="mb-3 ms-3 text-white">{{nombre}}</h2>
+          <p class=" mb-3 ms-3 user-desc text-white">
             {{descripcion}}
           </p>
         </div>
-        <div class="d-flex justify-content-center gap-5 mt-3 flex-wrap">
-          <button type="button" class="btn btn-outline-secondary" id="button-editar">Editar</button>
-          <button type="button" class="btn btn-outline-danger" id="button-eliminar">Eliminar</button>
-        </div>
-
       </div>
 
       <hr class="border-light">
 
       <div class="posts mt-4">
-        <p class="text-white">aca irían las publicaciones...</p>
+        <h4 class="text-white">Publicaciones</h4>
+
+        <div *ngIf="publicaciones.length === 0" class="text-light">
+          No hay publicaciones todavía.
+        </div>
+
+        <div *ngFor="let pub of publicaciones" class="card bg-dark text-white my-3 p-3 rounded shadow">
+          <h5 class="mb-2">{{ pub.titulo }}</h5>
+
+          <img *ngIf="pub.imagen" 
+               [src]="'http://localhost:3000/uploads/publicaciones/' + pub.imagen" 
+               class="img-fluid rounded mb-2"
+               alt="Imagen de publicación">
+
+          <p>{{ pub.descripcion }}</p>
+
+          <div class="d-flex justify-content-between small align-items-center">
+            <span>Publicado: {{ pub.fecha | date:'short' }}</span>
+
+            <div class="like-container">
+              <button
+                class="like-button"
+                [ngClass]="{ liked: pub.likes.includes(user_name) }"
+                (click)="darLike(pub._id)"
+                aria-label="Me gusta"
+              >
+              <span class="heart-icon">{{ pub.likes.includes(user_name) ? '❤️' : '🤍' }} </span>
+              <span class="like-count">{{ pub.likes.length }}</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
+
     </div>
   </div>
-
 </body>

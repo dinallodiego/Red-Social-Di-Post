@@ -23,6 +23,7 @@ export class PublicacionesComponent {
   mostrarModal = false;
   nuevoContenido = '';
   nuevaImagen: File | null = null;
+  totalDePublicaciones = 0;
 
   constructor(private http: HttpClient) {
     this.cargarPublicaciones();
@@ -38,22 +39,31 @@ export class PublicacionesComponent {
   this.cargarPublicaciones();
 }
   cargarPublicaciones() {
-    const params = {
-      page: this.paginaActual.toString(),
-      limit: this.publicacionesPorPagina.toString(),
-      sortBy: this.orden,
-      order: 'desc'
-    };
+  const params = {
+    page: this.paginaActual.toString(),
+    limit: this.publicacionesPorPagina.toString(),
+    sortBy: this.orden,
+    order: 'desc',
+    usuario: this.user_name,  
+  };
 
-    this.http.get<any[]>('http://localhost:3000/publicaciones', { params }).subscribe({
-      next: (data) => {
-        this.publicaciones = data;
-      },
-      error: (err) => {
-        console.error('Error al cargar publicaciones:', err);
-      }
-    });
+  this.http.get<any>('http://localhost:3000/publicaciones', { params }).subscribe({
+    next: (data) => {
+      this.publicaciones = data.publicaciones;
+      this.totalDePublicaciones = data.total;
+    },
+    error: (err) => {
+      console.error('Error al cargar publicaciones:', err);
+    }
+  });
+}
+
+
+  hayPaginaSiguiente(): boolean {
+    const totalPaginas = Math.ceil(this.totalDePublicaciones / this.publicacionesPorPagina);
+    return this.paginaActual < totalPaginas;
   }
+
 
   crearNuevaPublicacion() {
     this.mostrarModal = true;
