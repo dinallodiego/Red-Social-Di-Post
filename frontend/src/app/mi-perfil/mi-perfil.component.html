@@ -1,14 +1,14 @@
 <body class="bg-gradient-custom d-flex align-items-center justify-content-center min-vh-100">
   <div class="card profile-card shadow-lg rounded-4 text-white position-relative w-100 p-3">
     <div class="card-body">
-      <p class="username-top m-0 position-absolute">{{"@"}}{{user_name}}</p>
+      <p class="username-top m-0 position-absolute" style="color: rgb(65, 65, 65);">{{"@"}}{{user_name}}</p>
       <div class="row align-items-center mt-5 g-5">
         <div class="col-md-4 text-center">
           <img [src]="foto_dePerfilPath" alt="Foto de perfil" class="profile-img-xl">
         </div>
         <div class="col-md-8 ps-md-5">
-          <h2 class="mb-3 ms-3 text-white">{{nombre}}</h2>
-          <p class=" mb-3 ms-3 user-desc text-white">
+          <h2 class="mb-3 ms-3 " style="color: rgb(185, 185, 185);">{{nombre}}</h2>
+          <p class=" mb-3 ms-3 user-desc " style="color: rgb(185, 185, 185);">
             {{descripcion}}
           </p>
         </div>
@@ -17,7 +17,6 @@
       <hr class="border-light">
 
       <div class="posts mt-4">
-        <h4 class="text-white">Publicaciones</h4>
 
         <div *ngIf="publicaciones.length === 0" class="text-light">
           No hay publicaciones todavía.

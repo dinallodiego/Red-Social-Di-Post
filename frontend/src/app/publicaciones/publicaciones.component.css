@@ -24,14 +24,15 @@
   border-color: #fff;
 }
 
-#btn-fecha:focus, #btn-likes:focus {
+#btn-fecha:focus,
+#btn-likes:focus {
   background-color: #912633;
 }
 
 .like-container {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px; 
   margin-top: 8px;
 }
 
@@ -40,7 +41,7 @@
   border: none;
   font-size: 1.8rem;
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: transform 0.3s ease;
   padding: 0;
 }
 
@@ -64,6 +65,28 @@
   font-size: 1rem;
   color: #fff;
 }
+
+
+.btn-comment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  border-radius: 50%;
+  transition: 0.3s ease;
+  cursor: pointer;
+}
+
+.btn-comment img {
+  width: 25px;
+  height: 25px;
+  transition: transform 0.3s ease;
+}
+
+.btn-comment:hover img {
+  transform: scale(1.2);
+}
+
 
 .btn-fab {
   position: fixed;
@@ -121,7 +144,20 @@
 }
 
 
-@media (max-width: 768px) {
+@media (max-width: 576px) {
+  .btn-comment img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .like-button {
+    font-size: 1.5rem;
+  }
+
+  .like-count {
+    font-size: 0.9rem;
+  }
+
   .profile-card {
     padding: 20px;
     max-width: 95%;
@@ -139,14 +175,6 @@
 
   .btn-fab:hover {
     width: 160px;
-  }
-
-  .like-button {
-    font-size: 1.5rem;
-  }
-
-  .like-count {
-    font-size: 0.9rem;
   }
 
   img.img-fluid {
