@@ -23,7 +23,20 @@ export class Publicacion {
   @Prop({ required: true, type: [String] })
   likes: string[];
 
-  
+  @Prop({
+    required: true,
+    type: [{
+      usuario: { type: String, required: true },
+      contenido: { type: String, required: true },
+      fecha: { type: String, required: true }
+    }]
+  })
+  comentarios: {
+    usuario: string;
+    contenido: string;
+    fecha: string;
+  }[];
 }
+
 
 export const PublicacionSchema = SchemaFactory.createForClass(Publicacion);

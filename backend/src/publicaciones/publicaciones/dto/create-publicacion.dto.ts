@@ -1,4 +1,16 @@
-import { IsString, IsBoolean, IsDateString, IsNumber, IsArray } from 'class-validator';
+import { IsString, IsBoolean, IsDateString, IsArray, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+
+class ComentarioDto {
+  @IsString()
+  usuario: string;
+
+  @IsString()
+  contenido: string;
+
+  @IsDateString()
+  fecha: string;
+}
 
 export class CreatePublicacioneDto {
   @IsString()
@@ -17,9 +29,11 @@ export class CreatePublicacioneDto {
   publicada: boolean;
 
   @IsArray()
-  @IsString({ each: true }) 
+  @IsString({ each: true })
   likes: string[];
 
-  
-  
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ComentarioDto)
+  comentarios: ComentarioDto[];
 }

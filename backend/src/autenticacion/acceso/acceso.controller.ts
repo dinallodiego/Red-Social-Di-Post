@@ -92,7 +92,7 @@ export class AccesoController {
   };
 
   const token = sign(payload, "clave-ultra-secreta", {
-    expiresIn: '60s' 
+    expiresIn: '900s' 
   });
 
   

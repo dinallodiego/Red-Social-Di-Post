@@ -75,6 +75,15 @@ export class PublicacionController {
     return this.publicacionService.agregarLike(id, usuario);
   }
 
+  @Put(':id/comentarios')
+  async agregarComentario(
+    @Param('id') id: string,
+    @Body() body: { usuario: string; contenido: string }
+  ) {
+    return this.publicacionService.agregarComentario(id, body.usuario, body.contenido);
+  }
+
+
 
  
 }

@@ -63,5 +63,22 @@ export class PublicacionService {
   return publicaciones;
 }
 
+  async agregarComentario(id: string, usuario: string, contenido: string) {
+    const publicacion = await this.publicacionModel.findById(id);
+    if (!publicacion) throw new NotFoundException('Publicación no encontrada');
+
+    const nuevoComentario = {
+      usuario,
+      contenido,
+      fecha: new Date().toISOString()
+    };
+
+    publicacion.comentarios.push(nuevoComentario);
+    await publicacion.save();
+
+    return publicacion;
+  }
+
+
 
 }
