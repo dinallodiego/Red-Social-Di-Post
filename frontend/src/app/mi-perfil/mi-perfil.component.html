@@ -45,11 +45,48 @@
               <span class="heart-icon">{{ pub.likes.includes(user_name) ? '❤️' : '🤍' }} </span>
               <span class="like-count">{{ pub.likes.length }}</span>
               </button>
+              <span class="btn-comment" (click)="abrirComentarios(pub)">
+                <img src="/comment.png" alt="Comentario" style="cursor: pointer; height: 22px;">
+              </span>
             </div>
           </div>
+          
         </div>
       </div>
 
     </div>
   </div>
+
+<div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="mostrarModalComentarios">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content text-dark">
+      <div class="modal-header">
+        <h5 class="modal-title">Comentarios</h5>
+        <button type="button" class="btn-close" (click)="cerrarModalComentarios()"></button>
+      </div>
+      <div class="modal-body">
+        <div *ngIf="comentariosActuales.length === 0" class="text-muted">No hay comentarios aún.</div>
+        <ul class="list-group mb-3">
+          <li *ngFor="let c of comentariosActuales" class="list-group-item">
+            <strong>{{"@"}}{{ c.usuario }}</strong>
+            <p class="mb-1">{{ c.contenido }}</p>
+            <small class="text-muted">{{ c.fecha | date:'short' }}</small>
+          </li>
+        </ul>
+
+        <textarea [(ngModel)]="comentarioNuevo" class="form-control" rows="3" placeholder="Escribe tu comentario..."></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" (click)="cerrarModalComentarios()">Cerrar</button>
+        <button class="btn btn-primary" (click)="agregarComentario()">Comentar</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div *ngIf="mostrarModalComentarios" class="modal-backdrop fade show"></div>
+
+
+  
 </body>

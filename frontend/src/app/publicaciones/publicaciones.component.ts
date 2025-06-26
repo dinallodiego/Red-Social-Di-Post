@@ -25,6 +25,12 @@ export class PublicacionesComponent {
   nuevaImagen: File | null = null;
   totalDePublicaciones = 0;
 
+  comentariosActuales: { usuario: string; contenido: string; fecha: string }[] = [];
+  comentarioNuevo: string = '';
+  publicacionSeleccionadaId: string | null = null;
+  mostrarModalComentarios = false;
+
+
   constructor(private http: HttpClient) {
     this.cargarPublicaciones();
   }
@@ -163,19 +169,72 @@ export class PublicacionesComponent {
   });
 }
 
-get foto_dePerfilPath(): string {
-  const token = localStorage.getItem('token');
-  if (!token) return 'assets/default-profile.png';
+  get foto_dePerfilPath(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return 'assets/default-profile.png';
 
-  try {
-    const payload = JSON.parse(atob(token.split('.')[1]));
-    const filename = payload.fotoPerfil ?? '';
-    console.log('Foto perfil desde token:', filename);
-    return filename ? `http://localhost:3000/uploads/perfiles/${filename}` : 'assets/default-profile.png';
-  } catch (error) {
-    console.error('Error al decodificar token:', error);
-    return 'assets/default-profile.png';
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const filename = payload.fotoPerfil ?? '';
+      console.log('Foto perfil desde token:', filename);
+      return filename ? `http://localhost:3000/uploads/perfiles/${filename}` : 'assets/default-profile.png';
+    } catch (error) {
+      console.error('Error al decodificar token:', error);
+      return 'assets/default-profile.png';
+    }
   }
+
+  agregarComentario() {
+  if (!this.comentarioNuevo.trim()) return;
+
+  const body = {
+    usuario: this.user_name,
+    contenido: this.comentarioNuevo
+  };
+
+  this.http.put(`http://localhost:3000/publicaciones/${this.publicacionSeleccionadaId}/comentarios`, body).subscribe({
+    next: () => {
+      this.comentarioNuevo = '';
+      this.publicaciones = this.publicaciones.map(pub => {
+        if (pub._id === this.publicacionSeleccionadaId) {
+          return {
+            ...pub,
+            comentarios: [
+              ...pub.comentarios,
+              {
+                usuario: this.user_name,
+                contenido: body.contenido,
+                fecha: new Date().toISOString()
+              }
+            ]
+          };
+        }
+        return pub;
+      });
+      this.comentariosActuales = this.publicaciones.find(p => p._id === this.publicacionSeleccionadaId)?.comentarios || [];
+    },
+    error: err => {
+      console.error('Error al comentar:', err);
+      this.mostrarMensaje('Error al comentar', 'danger');
+    }
+  });
 }
+
+
+
+  abrirComentarios(pub: any) {
+    this.comentariosActuales = pub.comentarios || [];
+    this.publicacionSeleccionadaId = pub._id;
+    this.mostrarModalComentarios = true;
+  }
+
+  cerrarModalComentarios() {
+  this.mostrarModalComentarios = false;
+  this.comentarioNuevo = '';
+  this.publicacionSeleccionadaId = null;
+  this.comentariosActuales = [];
+}
+
+
 
 }
