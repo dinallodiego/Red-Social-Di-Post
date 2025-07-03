@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 
 export type PublicacionDocument = HydratedDocument<Publicacion>;
 
@@ -30,12 +30,14 @@ export class Publicacion {
   @Prop({
     required: true,
     type: [{
+      _id: { type: mongoose.Schema.Types.ObjectId, auto: true },
       usuario: { type: String, required: true },
       contenido: { type: String, required: true },
       fecha: { type: String, required: true }
     }],
   })
   comentarios: {
+    _id: string;
     usuario: string;
     contenido: string;
     fecha: string;

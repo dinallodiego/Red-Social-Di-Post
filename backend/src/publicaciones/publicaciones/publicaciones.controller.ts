@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Query, Param, Patch, UploadedFile, UseInterceptors, BadRequestException, Put } from '@nestjs/common';
+import { Controller, Get, Post, Body, Query, Param, Put, UploadedFile, UseInterceptors, BadRequestException } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
@@ -12,7 +12,7 @@ export class PublicacionController {
   @Post()
   @UseInterceptors(FileInterceptor('imagen', {
     storage: diskStorage({
-      destination: './uploads/publicaciones', 
+      destination: './uploads/publicaciones',
       filename: (req, file, callback) => {
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
         const ext = extname(file.originalname);
@@ -21,32 +21,30 @@ export class PublicacionController {
     }),
   }))
   async create(
-  @UploadedFile() imagen: Express.Multer.File,
-  @Body() body: CreatePublicacioneDto,
-) {
-  if (!imagen) {
-    throw new BadRequestException('La imagen es obligatoria');
+    @UploadedFile() imagen: Express.Multer.File,
+    @Body() body: CreatePublicacioneDto,
+  ) {
+    if (!imagen) {
+      throw new BadRequestException('La imagen es obligatoria');
+    }
+
+    let likesArray: string[] = [];
+    try {
+      likesArray = typeof body.likes === 'string' ? JSON.parse(body.likes) : body.likes;
+    } catch (error) {
+      likesArray = [];
+    }
+
+    const data = {
+      ...body,
+      imagen: imagen.filename,
+      likes: likesArray,
+    };
+
+    return await this.publicacionService.create(data);
   }
 
-  
-  let likesArray: string[] = [];
-  try {
-    likesArray = typeof body.likes === 'string' ? JSON.parse(body.likes) : body.likes;
-  } catch (error) {
-    likesArray = [];
-  }
-
-  const data = {
-    ...body,
-    imagen: imagen.filename,
-    likes: likesArray,
-  };
-
-  return await this.publicacionService.create(data);
-}
-
-
- @Get()
+  @Get()
   async findAll(
     @Query('page') page = '1',
     @Query('limit') limit = '10',
@@ -54,24 +52,19 @@ export class PublicacionController {
     @Query('order') order: 'asc' | 'desc' = 'desc',
     @Query('perfil') perfil: string = '',
   ) {
-    
     return await this.publicacionService.findAll(
       Number(page),
       Number(limit),
       sortBy,
       order,
       perfil,
-      
     );
-}
+  }
 
-
-
- @Get('usuario/:usuario')
+  @Get('usuario/:usuario')
   async findByUsuario(@Param('usuario') usuario: string) {
-  return this.publicacionService.findByUsuario(usuario);
-}
-
+    return this.publicacionService.findByUsuario(usuario);
+  }
 
   @Put(':id/like')
   async agregarLike(
@@ -89,8 +82,6 @@ export class PublicacionController {
     return this.publicacionService.agregarComentario(id, body.usuario, body.contenido);
   }
 
-  
-
   @Put(':id/deshabilitar')
   async deshabilitar(@Param('id') id: string) {
     return this.publicacionService.deshabilitar(id);
@@ -101,7 +92,14 @@ export class PublicacionController {
     return this.publicacionService.rehabilitar(id);
   }
 
-
-
- 
+  
+  @Put(':id/comentarios/:comentarioId')
+  async editarComentario(
+    @Param('id') id: string,
+    @Param('comentarioId') comentarioId: string,
+    @Body() body: { usuario: string; contenido: string; perfil: string }
+  ) {
+    const { usuario, contenido, perfil } = body;
+    return this.publicacionService.editarComentario(id, comentarioId, usuario, contenido, perfil);
+  }
 }
