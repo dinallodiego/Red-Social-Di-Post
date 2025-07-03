@@ -20,6 +20,10 @@ export class PublicacionesComponent {
   publicacionesPorPagina = 3;
   publicaciones: any[] = [];
 
+  comentarioEnEdicion: number | null = null; 
+  comentarioEditado: string = '';
+
+
   mostrarModal = false;
   nuevoContenido = '';
   nuevaImagen: File | null = null;
@@ -36,12 +40,16 @@ export class PublicacionesComponent {
 
 
   constructor(private http: HttpClient) {
-    this.cargarPublicaciones();
+    
   }
 
   ngOnInit(){
     this.cargarPublicaciones();
+    
+   
   }
+
+
 
   ordenarPor(tipo: 'fecha' | 'likes') {
   this.orden = tipo;
@@ -49,13 +57,15 @@ export class PublicacionesComponent {
   this.cargarPublicaciones();
 }
   cargarPublicaciones() {
-  const params = {
+    const params = {
     page: this.paginaActual.toString(),
     limit: this.publicacionesPorPagina.toString(),
     sortBy: this.orden,
     order: 'desc',
     usuario: this.user_name,  
-  };
+    perfil: this.perfil
+    };
+    
 
   this.http.get<any>('http://localhost:3000/publicaciones', { params }).subscribe({
     next: (data) => {
@@ -92,6 +102,17 @@ export class PublicacionesComponent {
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.usuario ?? ''; 
+    } catch {
+      return '';
+    }
+  }
+  get perfil(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return '';
+
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      return payload.perfil ?? '';
     } catch {
       return '';
     }
@@ -188,6 +209,11 @@ export class PublicacionesComponent {
     }
   }
 
+  puedeModificar(pub: any): boolean {
+  return this.perfil === 'admin' || pub.usuario === this.user_name;
+}
+
+
   agregarComentario() {
   if (!this.comentarioNuevo.trim()) return;
 
@@ -232,6 +258,8 @@ export class PublicacionesComponent {
     this.mostrarModalComentarios = true;
   }
 
+  
+
   cerrarModalComentarios() {
   this.mostrarModalComentarios = false;
   this.comentarioNuevo = '';
@@ -249,6 +277,35 @@ export class PublicacionesComponent {
     this.mostrarModalDetalle = false;
     this.publicacionDetalle = null;
   }
+
+ eliminarPublicacion(id: string) {
+  this.http.put(`http://localhost:3000/publicaciones/${id}/deshabilitar`, {}).subscribe({
+    next: () => {
+      this.mostrarMensaje('Publicación eliminada correctamente', 'success');
+      this.cargarPublicaciones(); 
+    },
+    error: (error) => {
+      console.error('Error al eliminar publicación:', error);
+      this.mostrarMensaje('No se pudo eliminar la publicación', 'danger');
+    }
+  });
+}
+
+rehabilitarPublicacion(id: string) {
+  this.http.put(`http://localhost:3000/publicaciones/${id}/rehabilitar`, {}).subscribe({
+    next: () => {
+      this.mostrarMensaje('Publicación dada de alta correctamente', 'success');
+      this.cargarPublicaciones();
+    },
+    error: (error) => {
+      console.error('Error al dar de alta la publicación:', error);
+      this.mostrarMensaje('No se pudo dar de alta la publicación', 'danger');
+    }
+  });
+}
+
+
+
 
 
 

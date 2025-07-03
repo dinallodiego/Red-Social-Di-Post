@@ -37,9 +37,21 @@
 
         <p class="mt-2 mb-1">{{ pub.descripcion }}</p>
         <p class="small mb-0" style="color: gray;">{{ pub.fecha | date:'short' }}</p>
+        <!-- Botón solo visible para perfil admin -->
+<button *ngIf="puedeModificar(pub)"
+        class="btn"
+        [ngClass]="pub.publicada ? 'btn-outline-danger' : 'btn-outline-success'"
+        (click)="pub.publicada ? eliminarPublicacion(pub._id) : rehabilitarPublicacion(pub._id)">
+  {{ pub.publicada ? 'Eliminar' : 'Dar de alta' }}
+</button>
+
+
+
+
+
       </div>
 
-      <!-- Paginación -->
+      
       <nav class="d-flex justify-content-center mt-4">
         <ul class="pagination pagination-sm">
           <li class="page-item" [class.disabled]="paginaActual === 1">
