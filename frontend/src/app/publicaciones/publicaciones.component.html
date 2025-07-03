@@ -114,9 +114,21 @@
       <div class="modal-body">
         <div *ngIf="comentariosActuales.length === 0" class="text-muted">No hay comentarios aún.</div>
         <ul class="list-group mb-3">
-          <li *ngFor="let c of comentariosActuales" class="list-group-item">
-            <strong>{{"@"}}{{ c.usuario }}</strong>
-            <p class="mb-1">{{ c.contenido }}</p>
+          <li *ngFor="let c of comentariosActuales" class="list-group-item d-flex flex-column gap-1">
+            <div class="d-flex justify-content-between align-items-center">
+              <strong>{{ '@' + c.usuario }}</strong>
+              <div *ngIf="puedeEditarComentario(c)">
+                <button *ngIf="comentarioEnEdicion !== c._id" class="btn btn-sm btn-outline-primary" (click)="editarComentario(c)">Editar</button>
+                <button *ngIf="comentarioEnEdicion === c._id" class="btn btn-sm btn-outline-success" (click)="guardarComentarioEditado(c)">Guardar</button>
+                <button *ngIf="comentarioEnEdicion === c._id" class="btn btn-sm btn-outline-secondary" (click)="cancelarEdicion()">Cancelar</button>
+              </div>
+            </div>
+
+            <div *ngIf="comentarioEnEdicion === c._id">
+              <textarea [(ngModel)]="comentarioEditado" class="form-control" rows="3"></textarea>
+            </div>
+            <p *ngIf="comentarioEnEdicion !== c._id" class="mb-1">{{ c.contenido }}</p>
+
             <small class="text-muted">{{ c.fecha | date:'short' }}</small>
           </li>
         </ul>
@@ -130,6 +142,7 @@
     </div>
   </div>
 </div>
+
 
 <!-- Modal Detalle Publicación -->
 <div class="modal fade show d-block" tabindex="-1" role="dialog" *ngIf="mostrarModalDetalle && publicacionDetalle">

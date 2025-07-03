@@ -20,16 +20,12 @@ export class PublicacionesComponent {
   publicacionesPorPagina = 3;
   publicaciones: any[] = [];
 
-  comentarioEnEdicion: number | null = null; 
-  comentarioEditado: string = '';
-
-
   mostrarModal = false;
   nuevoContenido = '';
   nuevaImagen: File | null = null;
   totalDePublicaciones = 0;
 
-  comentariosActuales: { usuario: string; contenido: string; fecha: string }[] = [];
+  comentariosActuales: any[] = [];
   comentarioNuevo: string = '';
   publicacionSeleccionadaId: string | null = null;
   mostrarModalComentarios = false;
@@ -37,79 +33,29 @@ export class PublicacionesComponent {
   publicacionDetalle: any = null;
   mostrarModalDetalle = false;
 
+  comentarioEnEdicion: string | null = null;
+  comentarioEditado: string = '';
 
+  constructor(private http: HttpClient) {}
 
-  constructor(private http: HttpClient) {
-    
-  }
-
-  ngOnInit(){
+  ngOnInit() {
     this.cargarPublicaciones();
-    
-   
-  }
-
-
-
-  ordenarPor(tipo: 'fecha' | 'likes') {
-  this.orden = tipo;
-  this.paginaActual = 1;
-  this.cargarPublicaciones();
-}
-  cargarPublicaciones() {
-    const params = {
-    page: this.paginaActual.toString(),
-    limit: this.publicacionesPorPagina.toString(),
-    sortBy: this.orden,
-    order: 'desc',
-    usuario: this.user_name,  
-    perfil: this.perfil
-    };
-    
-
-  this.http.get<any>('http://localhost:3000/publicaciones', { params }).subscribe({
-    next: (data) => {
-      this.publicaciones = data.publicaciones;
-      this.totalDePublicaciones = data.total;
-    },
-    error: (err) => {
-      console.error('Error al cargar publicaciones:', err);
-    }
-  });
-}
-
-
-  hayPaginaSiguiente(): boolean {
-    const totalPaginas = Math.ceil(this.totalDePublicaciones / this.publicacionesPorPagina);
-    return this.paginaActual < totalPaginas;
-  }
-
-
-  crearNuevaPublicacion() {
-    this.mostrarModal = true;
-  }
-
-  cerrarModal() {
-    this.mostrarModal = false;
-    this.nuevoContenido = '';
-    this.nuevaImagen = null;
   }
 
   get user_name(): string {
     const token = localStorage.getItem('token');
     if (!token) return '';
-
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
-      return payload.usuario ?? ''; 
+      return payload.usuario ?? '';
     } catch {
       return '';
     }
   }
+
   get perfil(): string {
     const token = localStorage.getItem('token');
     if (!token) return '';
-
     try {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return payload.perfil ?? '';
@@ -118,49 +64,30 @@ export class PublicacionesComponent {
     }
   }
 
-   agregarPublicacion() {
-  if (!this.nuevaImagen || !this.nuevoContenido.trim()) {
-    this.mostrarMensaje("Completa todos los campos", "danger");
-    return;
+  cargarPublicaciones() {
+    const params = {
+      page: this.paginaActual.toString(),
+      limit: this.publicacionesPorPagina.toString(),
+      sortBy: this.orden,
+      order: 'desc',
+      perfil: this.perfil
+    };
+
+    this.http.get<any>('http://localhost:3000/publicaciones', { params }).subscribe({
+      next: (data) => {
+        this.publicaciones = data.publicaciones;
+        this.totalDePublicaciones = data.total;
+      },
+      error: (err) => {
+        console.error('Error al cargar publicaciones:', err);
+      }
+    });
   }
 
-  const formData = new FormData();
-  formData.append('usuario', this.user_name);
-  formData.append('imagen', this.nuevaImagen);
-  formData.append('descripcion', this.nuevoContenido);
-  formData.append('fecha', new Date().toISOString());
-  formData.append('publicada', 'true');
-
-  this.http.post('http://localhost:3000/publicaciones', formData).subscribe({
-    next: () => {
-      this.mostrarMensaje("Publicación exitosa", "success");
-      this.cargarPublicaciones(); 
-      this.cerrarModal();          
-    },
-    error: (error) => {
-      console.error(error);
-      this.mostrarMensaje("Error al registrar publicación", "danger");
-    }
-  });
-}
-
-
-  onImagenSeleccionada(event: any) {
-    const file = event.target.files[0];
-    if (file) {
-      this.nuevaImagen = file;
-    }
-  }
-
-  mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {
-  if (this.modalContainer) {
-    this.modalContainer.nativeElement.innerHTML = `<p class="text-center text-${tipo} mt-4">${mensaje}</p>`;
-  }
-}
-
-
-  obtenerUrlImagen(nombre: string) {
-    return `http://localhost:3000/uploads/publicaciones/${nombre}`;
+  ordenarPor(tipo: 'fecha' | 'likes') {
+    this.orden = tipo;
+    this.paginaActual = 1;
+    this.cargarPublicaciones();
   }
 
   siguientePagina() {
@@ -175,82 +102,112 @@ export class PublicacionesComponent {
     }
   }
 
-  darLike(publicacionId: string) {
-  const usuario = this.user_name;
-  if (!usuario) {
-    this.mostrarMensaje('Debés estar logueado para dar like', 'danger');
-    return;
+  hayPaginaSiguiente(): boolean {
+    const totalPaginas = Math.ceil(this.totalDePublicaciones / this.publicacionesPorPagina);
+    return this.paginaActual < totalPaginas;
   }
 
-  this.http.put(`http://localhost:3000/publicaciones/${publicacionId}/like`, { usuario }).subscribe({
-    next: () => {
-      this.mostrarMensaje('¡Te gusta esta publicación!', 'success');
-      this.cargarPublicaciones(); 
-    },
-    error: (error) => {
-      console.error(error);
-      this.mostrarMensaje('Error al dar like', 'danger');
-    }
-  });
-}
+  crearNuevaPublicacion() {
+    this.mostrarModal = true;
+  }
 
-  get foto_dePerfilPath(): string {
-    const token = localStorage.getItem('token');
-    if (!token) return 'assets/default-profile.png';
+  cerrarModal() {
+    this.mostrarModal = false;
+    this.nuevoContenido = '';
+    this.nuevaImagen = null;
+  }
 
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      const filename = payload.fotoPerfil ?? '';
-      console.log('Foto perfil desde token:', filename);
-      return filename ? `http://localhost:3000/uploads/perfiles/${filename}` : 'assets/default-profile.png';
-    } catch (error) {
-      console.error('Error al decodificar token:', error);
-      return 'assets/default-profile.png';
+  onImagenSeleccionada(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.nuevaImagen = file;
     }
+  }
+
+  agregarPublicacion() {
+    if (!this.nuevaImagen || !this.nuevoContenido.trim()) {
+      this.mostrarMensaje("Completa todos los campos", "danger");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('usuario', this.user_name);
+    formData.append('imagen', this.nuevaImagen);
+    formData.append('descripcion', this.nuevoContenido);
+    formData.append('fecha', new Date().toISOString());
+    formData.append('publicada', 'true');
+    formData.append('perfil', this.perfil);
+
+    this.http.post('http://localhost:3000/publicaciones', formData).subscribe({
+      next: () => {
+        this.mostrarMensaje("Publicación exitosa", "success");
+        this.cargarPublicaciones();
+        this.cerrarModal();
+      },
+      error: (error) => {
+        console.error(error);
+        this.mostrarMensaje("Error al registrar publicación", "danger");
+      }
+    });
+  }
+
+  mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {
+    if (this.modalContainer) {
+      this.modalContainer.nativeElement.innerHTML = `<p class="text-center text-${tipo} mt-4">${mensaje}</p>`;
+    }
+  }
+
+  obtenerUrlImagen(nombre: string) {
+    return `http://localhost:3000/uploads/publicaciones/${nombre}`;
+  }
+
+  darLike(publicacionId: string) {
+    const usuario = this.user_name;
+    if (!usuario) {
+      this.mostrarMensaje('Debés estar logueado para dar like', 'danger');
+      return;
+    }
+
+    this.http.put(`http://localhost:3000/publicaciones/${publicacionId}/like`, { usuario }).subscribe({
+      next: () => {
+        this.cargarPublicaciones();
+      },
+      error: (error) => {
+        console.error(error);
+        this.mostrarMensaje('Error al dar like', 'danger');
+      }
+    });
   }
 
   puedeModificar(pub: any): boolean {
-  return this.perfil === 'admin' || pub.usuario === this.user_name;
-}
+    return this.perfil === 'admin' || pub.usuario === this.user_name;
+  }
 
+  eliminarPublicacion(id: string) {
+    this.http.put(`http://localhost:3000/publicaciones/${id}/deshabilitar`, {}).subscribe({
+      next: () => {
+        this.mostrarMensaje('Publicación eliminada correctamente', 'success');
+        this.cargarPublicaciones();
+      },
+      error: (error) => {
+        console.error('Error al eliminar publicación:', error);
+        this.mostrarMensaje('No se pudo eliminar la publicación', 'danger');
+      }
+    });
+  }
 
-  agregarComentario() {
-  if (!this.comentarioNuevo.trim()) return;
-
-  const body = {
-    usuario: this.user_name,
-    contenido: this.comentarioNuevo
-  };
-
-  this.http.put(`http://localhost:3000/publicaciones/${this.publicacionSeleccionadaId}/comentarios`, body).subscribe({
-    next: () => {
-      this.comentarioNuevo = '';
-      this.publicaciones = this.publicaciones.map(pub => {
-        if (pub._id === this.publicacionSeleccionadaId) {
-          return {
-            ...pub,
-            comentarios: [
-              ...pub.comentarios,
-              {
-                usuario: this.user_name,
-                contenido: body.contenido,
-                fecha: new Date().toISOString()
-              }
-            ]
-          };
-        }
-        return pub;
-      });
-      this.comentariosActuales = this.publicaciones.find(p => p._id === this.publicacionSeleccionadaId)?.comentarios || [];
-    },
-    error: err => {
-      console.error('Error al comentar:', err);
-      this.mostrarMensaje('Error al comentar', 'danger');
-    }
-  });
-}
-
-
+  rehabilitarPublicacion(id: string) {
+    this.http.put(`http://localhost:3000/publicaciones/${id}/rehabilitar`, {}).subscribe({
+      next: () => {
+        this.mostrarMensaje('Publicación dada de alta correctamente', 'success');
+        this.cargarPublicaciones();
+      },
+      error: (error) => {
+        console.error('Error al dar de alta la publicación:', error);
+        this.mostrarMensaje('No se pudo dar de alta la publicación', 'danger');
+      }
+    });
+  }
 
   abrirComentarios(pub: any) {
     this.comentariosActuales = pub.comentarios || [];
@@ -258,15 +215,73 @@ export class PublicacionesComponent {
     this.mostrarModalComentarios = true;
   }
 
-  
-
   cerrarModalComentarios() {
-  this.mostrarModalComentarios = false;
-  this.comentarioNuevo = '';
-  this.publicacionSeleccionadaId = null;
-  this.comentariosActuales = [];
-}
+    this.mostrarModalComentarios = false;
+    this.comentarioNuevo = '';
+    this.publicacionSeleccionadaId = null;
+    this.comentariosActuales = [];
+    this.cancelarEdicion();
+  }
 
+  agregarComentario() {
+    if (!this.comentarioNuevo.trim()) return;
+
+    const body = {
+      usuario: this.user_name,
+      contenido: this.comentarioNuevo
+    };
+
+    this.http.put(`http://localhost:3000/publicaciones/${this.publicacionSeleccionadaId}/comentarios`, body).subscribe({
+      next: () => {
+        const nuevo = {
+          usuario: this.user_name,
+          contenido: body.contenido,
+          fecha: new Date().toISOString()
+        };
+        this.comentariosActuales.push(nuevo);
+        this.comentarioNuevo = '';
+      },
+      error: err => {
+        console.error('Error al comentar:', err);
+        this.mostrarMensaje('Error al comentar', 'danger');
+      }
+    });
+  }
+
+  puedeEditarComentario(c: any): boolean {
+    return this.perfil === 'admin' || c.usuario === this.user_name;
+  }
+
+  editarComentario(c: any) {
+    this.comentarioEnEdicion = c._id;
+    this.comentarioEditado = c.contenido;
+  }
+
+  cancelarEdicion() {
+    this.comentarioEnEdicion = null;
+    this.comentarioEditado = '';
+  }
+
+  guardarComentarioEditado(c: any) {
+    const body = {
+      usuario: this.user_name,
+      contenido: this.comentarioEditado,
+      perfil: this.perfil
+    };
+
+    this.http.put(`http://localhost:3000/publicaciones/${this.publicacionSeleccionadaId}/comentarios/${c._id}`, body).subscribe({
+      next: () => {
+        c.contenido = this.comentarioEditado;
+        c.fecha = new Date().toISOString();
+        this.cancelarEdicion();
+        this.mostrarMensaje("Comentario actualizado", "success");
+      },
+      error: err => {
+        console.error('Error al editar comentario:', err);
+        this.mostrarMensaje("No autorizado o error al actualizar", "danger");
+      }
+    });
+  }
 
   abrirDetallePublicacion(pub: any) {
     this.publicacionDetalle = pub;
@@ -278,35 +293,16 @@ export class PublicacionesComponent {
     this.publicacionDetalle = null;
   }
 
- eliminarPublicacion(id: string) {
-  this.http.put(`http://localhost:3000/publicaciones/${id}/deshabilitar`, {}).subscribe({
-    next: () => {
-      this.mostrarMensaje('Publicación eliminada correctamente', 'success');
-      this.cargarPublicaciones(); 
-    },
-    error: (error) => {
-      console.error('Error al eliminar publicación:', error);
-      this.mostrarMensaje('No se pudo eliminar la publicación', 'danger');
+  get foto_dePerfilPath(): string {
+    const token = localStorage.getItem('token');
+    if (!token) return 'assets/default-profile.png';
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1]));
+      const filename = payload.fotoPerfil ?? '';
+      return filename ? `http://localhost:3000/uploads/perfiles/${filename}` : 'assets/default-profile.png';
+    } catch (error) {
+      console.error('Error al decodificar token:', error);
+      return 'assets/default-profile.png';
     }
-  });
-}
-
-rehabilitarPublicacion(id: string) {
-  this.http.put(`http://localhost:3000/publicaciones/${id}/rehabilitar`, {}).subscribe({
-    next: () => {
-      this.mostrarMensaje('Publicación dada de alta correctamente', 'success');
-      this.cargarPublicaciones();
-    },
-    error: (error) => {
-      console.error('Error al dar de alta la publicación:', error);
-      this.mostrarMensaje('No se pudo dar de alta la publicación', 'danger');
-    }
-  });
-}
-
-
-
-
-
-
+  }
 }
