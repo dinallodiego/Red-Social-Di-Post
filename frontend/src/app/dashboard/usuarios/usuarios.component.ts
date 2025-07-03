@@ -1,28 +1,56 @@
-import { Component, ElementRef, NgModule, ViewChild, inject } from '@angular/core';
+import { Component, OnInit,inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-registro',
-  templateUrl: './registro.component.html',
-  styleUrls: ['./registro.component.css'],
-  imports : [CommonModule]
+  selector: 'app-usuarios',
+  templateUrl: './usuarios.component.html',
+  standalone: true,
+  imports: [CommonModule, FormsModule],
+  styleUrls: ['./usuarios.component.css']
 })
-export class RegistroComponent {
-  @ViewChild('modalContainer', { static: true }) modalContainer!: ElementRef;
-
-  registrando: boolean = false;
-  perfil: string = "usuario";
-  passwordVisible = false;
+export class UsuariosComponent implements OnInit {
+  usuarios: any[] = [];
+  nuevoUsuario = {
+    nombre: '',
+    apellido: '',
+    fechaNacimiento: '',
+    usuario: '',
+    email: '',
+    password: '',
+    repetirPassword: '',
+    descripcion: '',
+    perfil: 'usuario',
+    activo: true
+  };
+  fotoPerfil!: File;
+  cargando = false;
+  mensaje: string = '';
   activo= true;
+  passwordVisible = false;
+  tipoMensaje: 'success' | 'danger' | '' = '';
   router = inject(Router);
+
   constructor(private http: HttpClient) {}
 
-  async registrarUsuario() {
-    if (this.registrando) return;
-    this.registrando = true;
+  ngOnInit() {
+    this.cargarUsuarios();
+  }
 
+  cargarUsuarios() {
+    this.http.get<any[]>('http://localhost:3000/usuarios').subscribe(data => this.usuarios = data);
+  }
+
+  onFileSelected(event: any) {
+    const file: File = event.target.files[0];
+    if (file) {
+      this.fotoPerfil = file;
+    }
+  }
+
+  async registrarUsuario(){
     const nombre = (document.getElementById('nombre') as HTMLInputElement).value.trim();
     const apellido = (document.getElementById('apellido') as HTMLInputElement).value.trim();
     const fechaNacimiento = (document.getElementById('fechaNacimiento') as HTMLInputElement).value;
@@ -30,26 +58,24 @@ export class RegistroComponent {
     const usuario = (document.getElementById('usuario') as HTMLInputElement).value.trim();
     const email = (document.getElementById('email') as HTMLInputElement).value.trim();
     const password = (document.getElementById('password') as HTMLInputElement).value;
-    const repetirPassword = (document.getElementById('repetirPassword') as HTMLInputElement).value;
     const descripcion = (document.getElementById('descripcion') as HTMLTextAreaElement).value.trim();
+    const perfil = (document.getElementById('perfil') as HTMLInputElement).value;
 
-    if (!nombre || !apellido || !fechaNacimiento || !usuario || !email || !password || !repetirPassword || !descripcion || !fotoPerfil.files?.length) {
+    if (!nombre || !apellido || !fechaNacimiento || !usuario || !email || !password  || !descripcion || !fotoPerfil.files?.length) {
       this.mostrarMensaje("Completa todos los campos", "danger");
-      this.registrando = false;
+      
       return;
     }
 
     const nombreApellidoRegex = /^[a-zA-Z\s]+$/;
     if (!nombreApellidoRegex.test(nombre) || !nombreApellidoRegex.test(apellido)) {
       this.mostrarMensaje("Nombre y apellido solo deben contener letras", "danger");
-      this.registrando = false;
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       this.mostrarMensaje("Ingresa un email válido", "danger");
-      this.registrando = false;
       return;
     }
 
@@ -57,9 +83,8 @@ export class RegistroComponent {
       return /[A-Z]/.test(cadena) && /\d/.test(cadena);
     };
 
-    if (password.length < 8 || !contieneMayusculaYNumero(password) || password !== repetirPassword) {
+    if (password.length < 8 || !contieneMayusculaYNumero(password)) {
       this.mostrarMensaje("Contraseña inválida o no coincide", "danger");
-      this.registrando = false;
       return;
     }
 
@@ -72,7 +97,7 @@ export class RegistroComponent {
     formData.append('email', email);
     formData.append('password', password);
     formData.append('descripcion', descripcion);
-    formData.append('perfil', this.perfil);
+    formData.append('perfil', perfil);
     formData.append("activo" , String(this.activo) )
 
     try {
@@ -82,7 +107,7 @@ export class RegistroComponent {
 
   if (loginResponse?.token) {
     localStorage.setItem('token', loginResponse.token);
-    this.mostrarMensaje("Registro exitoso. Bienvenido a DiPost", "success");
+    this.mostrarMensaje("Usuario registrado con exito", "success");
     setTimeout(() => this.router.navigate(['/publicaciones']), 2500);
   } else {
     this.mostrarMensaje("Error al iniciar sesión", "danger");
@@ -95,11 +120,40 @@ export class RegistroComponent {
 
   }
 
-  mostrarMensaje(mensaje: string, tipo: 'danger' | 'success') {
-    this.modalContainer.nativeElement.innerHTML = `<p class="text-center text-${tipo} mt-4">${mensaje}</p>`;
+ 
+
+  deshabilitarUsuario(id: string) {
+    this.http.delete(`http://localhost:3000/usuarios/${id}`).subscribe(() => this.cargarUsuarios());
   }
 
-   togglePassword() {
-    this.passwordVisible = !this.passwordVisible;
+  rehabilitarUsuario(id: string) {
+    this.http.post(`http://localhost:3000/usuarios/rehabilitar/${id}`, {}).subscribe(() => this.cargarUsuarios());
   }
+
+  limpiarFormulario() {
+    this.nuevoUsuario = {
+      nombre: '',
+      apellido: '',
+      fechaNacimiento: '',
+      usuario: '',
+      email: '',
+      password: '',
+      repetirPassword: '',
+      descripcion: '',
+      perfil: 'usuario',
+      activo: true
+    };
+    this.fotoPerfil = undefined!;
+  }
+
+  mostrarMensaje(mensaje: string, tipo: 'success' | 'danger') {
+    this.mensaje = mensaje;
+    this.tipoMensaje = tipo;
+    setTimeout(() => this.mensaje = '', 4000);
+  }
+
+  togglePassword() {
+      this.passwordVisible = !this.passwordVisible;
+    }
 }
+

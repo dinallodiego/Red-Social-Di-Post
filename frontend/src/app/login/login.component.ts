@@ -48,6 +48,11 @@ export class LoginComponent {
     );
 
     if (response && response.usuario && response.token) {
+      if (!response.usuario.activo) {
+      this.colorMensaje = 'red';
+      this.mensaje = 'Tu cuenta fue deshabilitada por el administrador';
+      return;
+      }
     localStorage.setItem('token', response.token);
     localStorage.setItem('usuario', JSON.stringify(response.usuario));
     this.colorMensaje = 'green';

@@ -30,6 +30,10 @@ export class PublicacionesComponent {
   publicacionSeleccionadaId: string | null = null;
   mostrarModalComentarios = false;
 
+  publicacionDetalle: any = null;
+  mostrarModalDetalle = false;
+
+
 
   constructor(private http: HttpClient) {
     this.cargarPublicaciones();
@@ -234,6 +238,17 @@ export class PublicacionesComponent {
   this.publicacionSeleccionadaId = null;
   this.comentariosActuales = [];
 }
+
+
+  abrirDetallePublicacion(pub: any) {
+    this.publicacionDetalle = pub;
+    this.mostrarModalDetalle = true;
+  }
+
+  cerrarModalDetalle() {
+    this.mostrarModalDetalle = false;
+    this.publicacionDetalle = null;
+  }
 
 
 
