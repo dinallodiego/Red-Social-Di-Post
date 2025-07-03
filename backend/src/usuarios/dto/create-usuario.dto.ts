@@ -9,4 +9,5 @@ export class CreateUsuarioDto {
   password: string;
   descripcion: string;
   perfil: string;
+  activo: boolean;
 }

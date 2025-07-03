@@ -7,6 +7,7 @@ import { CreateUsuarioDto } from '../../usuarios/dto/create-usuario.dto';
 import { UpdateUsuarioDto } from '../../usuarios/dto/update-usuario.dto';
 import * as bcrypt from 'bcrypt'; 
 import { sign } from 'jsonwebtoken';
+import { verify } from 'jsonwebtoken';
 
 
 
@@ -83,14 +84,14 @@ export class AccesoController {
   }
 
   const payload = {
-    id: usuario._id,
-    email: usuario.email,
-    nombre: usuario.nombre,
-    usuario: usuario.usuario,
-    fotoPerfil: usuario.fotoPerfil,
-    descripcion: usuario.descripcion
-  };
-
+      id: usuario._id,
+      email: usuario.email,
+      nombre: usuario.nombre,
+      usuario: usuario.usuario,
+      fotoPerfil: usuario.fotoPerfil,
+      descripcion: usuario.descripcion,
+      perfil: usuario.perfil   
+};
   const token = sign(payload, "clave-ultra-secreta", {
     expiresIn: '900s' 
   });
@@ -103,4 +104,39 @@ export class AccesoController {
     token
   };
 }
+
+
+
+@Post('renovar-token')
+async renovarToken(@Body() body: any) {
+  const { token } = body;
+
+  try {
+    const payload: any = verify(token, 'clave-ultra-secreta');
+
+    const usuario = await this.accesoService.findByEmail(payload.email);
+    if (!usuario) {
+      return { mensaje: 'Usuario no encontrado', status: 404 };
+    }
+
+    const nuevoPayload = {
+      id: usuario._id,
+      email: usuario.email,
+      nombre: usuario.nombre,
+      usuario: usuario.usuario,
+      fotoPerfil: usuario.fotoPerfil,
+      descripcion: usuario.descripcion,
+      perfil: usuario.perfil
+    };
+
+    const nuevoToken = sign(nuevoPayload, 'clave-ultra-secreta', {
+      expiresIn: '600s', 
+    });
+
+    return { mensaje: 'Sesión extendida', token: nuevoToken };
+  } catch (err) {
+    return { mensaje: 'Token inválido o expirado', status: 401 };
+  }
+}
+
 }
