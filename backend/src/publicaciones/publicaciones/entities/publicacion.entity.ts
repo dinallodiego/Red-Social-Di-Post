@@ -17,11 +17,15 @@ export class Publicacion {
   @Prop({ required: true })
   fecha: string;
 
-  @Prop({ required: true })
-  publicada: string;
+  @Prop({ required: true, type: Boolean }) 
+  publicada: boolean;
+
 
   @Prop({ required: true, type: [String] })
   likes: string[];
+
+  @Prop({ required: true })
+  perfil: string;
 
   @Prop({
     required: true,
@@ -29,7 +33,7 @@ export class Publicacion {
       usuario: { type: String, required: true },
       contenido: { type: String, required: true },
       fecha: { type: String, required: true }
-    }]
+    }],
   })
   comentarios: {
     usuario: string;

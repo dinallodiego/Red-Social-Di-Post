@@ -15,20 +15,34 @@ export class PublicacionService {
     const nuevaPublicacion = new this.publicacionModel(data);
     return await nuevaPublicacion.save();
   }
-
-  async findAll(
+async findAll(
   page = 1,
   limit = 10,
   sortBy = 'fecha',
   order: 'asc' | 'desc' = 'desc',
+  perfil: string = ''
 ): Promise<{ total: number, publicaciones: Publicacion[] }> {
   const skip = (page - 1) * limit;
   const sortOption: any = {};
   sortOption[sortBy] = order === 'asc' ? 1 : -1;
 
-  const total = await this.publicacionModel.countDocuments();
+  let filter = {};
+
+  if (perfil === 'admin') {
+    filter = {};
+  } else if (perfil === 'usuario') {
+    filter = { 
+      $or: [
+        { publicada: true },  
+        { perfil: 'admin' } 
+      ]
+    };
+  }
+
+  const total = await this.publicacionModel.countDocuments(filter);
+
   const publicaciones = await this.publicacionModel
-    .find()
+    .find(filter)
     .sort(sortOption)
     .skip(skip)
     .limit(limit)
@@ -36,6 +50,19 @@ export class PublicacionService {
 
   return { total, publicaciones };
 }
+
+
+
+
+
+async findByUsuario(usuario: string): Promise<Publicacion[]> {
+  const publicaciones = await this.publicacionModel
+    .find({ usuario, publicada: true }) 
+    .sort({ fecha: -1 })
+    .exec();
+  return publicaciones;
+}
+
 
 
   async agregarLike(id: string, usuario: string) {
@@ -57,12 +84,6 @@ export class PublicacionService {
   return publicacion;
 }
 
- async findByUsuario(usuario: string): Promise<Publicacion[]> {
-
-  const publicaciones = await this.publicacionModel.find({ usuario }).sort({ fecha: -1 }).exec();
-  return publicaciones;
-}
-
   async agregarComentario(id: string, usuario: string, contenido: string) {
     const publicacion = await this.publicacionModel.findById(id);
     if (!publicacion) throw new NotFoundException('Publicación no encontrada');
@@ -78,6 +99,17 @@ export class PublicacionService {
 
     return publicacion;
   }
+
+  
+
+    async deshabilitar(id: string) {
+    return this.publicacionModel.findByIdAndUpdate(id, { publicada: false }, { new: true });
+  }
+
+  async rehabilitar(id: string) {
+    return this.publicacionModel.findByIdAndUpdate(id, { publicada: true }, { new: true });
+  }
+
 
 
 

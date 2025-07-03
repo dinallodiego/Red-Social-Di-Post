@@ -46,20 +46,26 @@ export class PublicacionController {
 }
 
 
-  @Get()
+ @Get()
   async findAll(
     @Query('page') page = '1',
     @Query('limit') limit = '10',
     @Query('sortBy') sortBy = 'fecha',
     @Query('order') order: 'asc' | 'desc' = 'desc',
+    @Query('perfil') perfil: string = '',
   ) {
+    
     return await this.publicacionService.findAll(
       Number(page),
       Number(limit),
       sortBy,
       order,
+      perfil,
+      
     );
-  }
+}
+
+
 
  @Get('usuario/:usuario')
   async findByUsuario(@Param('usuario') usuario: string) {
@@ -81,6 +87,18 @@ export class PublicacionController {
     @Body() body: { usuario: string; contenido: string }
   ) {
     return this.publicacionService.agregarComentario(id, body.usuario, body.contenido);
+  }
+
+  
+
+  @Put(':id/deshabilitar')
+  async deshabilitar(@Param('id') id: string) {
+    return this.publicacionService.deshabilitar(id);
+  }
+
+  @Put(':id/rehabilitar')
+  async rehabilitar(@Param('id') id: string) {
+    return this.publicacionService.rehabilitar(id);
   }
 
 
